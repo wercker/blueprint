@@ -23,9 +23,9 @@ _testmain.go
 *.test
 *.prof
 
-blueprint
+{{file .Name }}
 /vendor/**
 !/vendor/vendor.json
 /.wercker
 
-output
+.DS_STORE

@@ -1,0 +1,95 @@
+box: golang:1.6
+build:
+  base-path: /go/src/github.com/wercker/{{ file .Name }}
+  steps:
+    - script:
+        name: install govendor
+        code: go get -u github.com/kardianos/govendor
+
+    - script:
+        name: go vet
+        code: govendor vet +local
+
+    - golint:
+        exclude: vendor
+
+    - script:
+        name: force "go get" over ssh
+        code: git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+    - add-ssh-key:
+        keyname: WALTERBOT
+
+    - add-to-known_hosts:
+        hostname: github.com
+        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+        type: rsa
+
+    - script:
+        name: install dependencies
+        code: govendor sync
+
+    - script:
+        name: go test
+        code: govendor test +local
+
+    - script:
+        name: go build
+        code: |
+          CGO_ENABLED=0 \
+            go build \
+            -ldflags="-s -X github.com/wercker/{{package .Name}}.GitCommit=$WERCKER_GIT_COMMIT -X github.com/wercker/{{package .Name}}.PatchVersion=$(( ($(date +%s) - $(date --date=20150101 +%s) )/(60*60*24) )) -X github.com/wercker/{{package .Name}}.Compiled=$(date +%s)" \
+            -installsuffix cgo \
+            -o $WERCKER_OUTPUT_DIR/{{file .Name}}
+
+    - script:
+        name: forward deployment scripts
+        code: cp -r deployment $WERCKER_OUTPUT_DIR/deployment
+
+push-quay:
+  box:
+    id: alpine
+    cmd: /bin/sh
+  steps:
+    - script:
+        name: install apk packages
+        code: |
+          echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+          apk update && apk add ca-certificates
+
+    - script:
+        name: prepare
+        code: mv ./{{file .Name}} /{{file .Name}}
+
+    - script:
+        name: forward deployment scripts
+        code: cp -r deployment $WERCKER_OUTPUT_DIR/deployment
+
+    - internal/docker-push:
+        repository: quay.io/wercker/{{.Name}}
+        registry: https://quay.io
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
+        entrypoint: /{{package .Name}}
+        ports: "{{.Port}}"
+
+deploy-kube:
+  steps:
+    - script:
+        name: generating kube file
+        cwd: deployment
+        code: |
+          touch kube.yml
+          ./t.sh service.template.yml >> kube.yml
+          ./t.sh deployment.template.yml >> kube.yml
+          ./t.sh ingress.template.yml >> kube.yml
+          cat kube.yml
+
+    - kubectl:
+        name: deploy to kubernetes
+        cwd: deployment
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: apply -f kube.yml

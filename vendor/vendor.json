@@ -1,0 +1,25 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "yXrS4e4yxaRBu/MX+39X3cS4kbg=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "a283a10442df8dc09befd873fab202bf8a253d6a",
+			"revisionTime": "2016-07-16T02:56:31Z"
+		},
+		{
+			"checksumSHA1": "8fD/im5Kwvy3JgmxulDTambmE8w=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "a646d33e2ee3172a661fc09bca23bb4889a41bc8",
+			"revisionTime": "2016-07-15T05:43:45Z"
+		},
+		{
+			"checksumSHA1": "hi6sSeRj+oyvsd+VqeSW4x9ET4U=",
+			"path": "gopkg.in/urfave/cli.v1",
+			"revision": "1efa31f08b9333f1bd4882d61f9d668a70cd902e",
+			"revisionTime": "2016-06-28T05:30:56Z"
+		}
+	],
+	"rootPath": "github.com/wercker/blueprint"
+}
