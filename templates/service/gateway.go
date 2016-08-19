@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"google.golang.org/grpc"
+	"gopkg.in/urfave/cli.v1"
 
+	log "github.com/Sirupsen/logrus"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/wercker/auth/middleware"
 	"github.com/wercker/blueprint/templates/service/core"
 	"golang.org/x/net/context"
-	cli "gopkg.in/urfave/cli.v1"
+	"google.golang.org/grpc"
 )
 
 var gatewayCommand = cli.Command{
@@ -33,12 +33,12 @@ var gatewayCommand = cli.Command{
 }
 
 var gatewayAction = func(c *cli.Context) error {
-	log.Println("Starting env var gateway")
+	log.Info("Starting gRPC gateway")
 
-	o, err := ParseGatewayOptions(c)
+	o, err := parseGatewayOptions(c)
 	if err != nil {
-		log.Println(err)
-		return cli.NewExitError("Invalid arguments", 3)
+		log.WithError(err).Error("Unable to validate arguments")
+		return errorExitCode
 	}
 
 	ctx := context.Background()
@@ -50,8 +50,8 @@ var gatewayAction = func(c *cli.Context) error {
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err = core.RegisterBlueprintHandlerFromEndpoint(ctx, mux, o.Host, opts)
 	if err != nil {
-		log.Println(err)
-		return err
+		log.WithError(err).Error("Unable to register handler from Endpoint")
+		return errorExitCode
 	}
 
 	authMiddleware := middleware.AuthTokenMiddleware(mux)
@@ -62,7 +62,7 @@ var gatewayAction = func(c *cli.Context) error {
 	return nil
 }
 
-func ParseGatewayOptions(c *cli.Context) (*GatewayOptions, error) {
+func parseGatewayOptions(c *cli.Context) (*gatewayOptions, error) {
 	port := c.Int("port")
 	if !validPortNumber(port) {
 		return nil, ErrInvalidPortNumber
@@ -70,13 +70,13 @@ func ParseGatewayOptions(c *cli.Context) (*GatewayOptions, error) {
 
 	host := c.String("host")
 
-	return &GatewayOptions{
+	return &gatewayOptions{
 		Port: port,
 		Host: host,
 	}, nil
 }
 
-type GatewayOptions struct {
+type gatewayOptions struct {
 	Port int
 	Host string
 }

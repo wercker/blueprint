@@ -19,17 +19,17 @@ func main() {
 	app.Flags = []cli.Flag{}
 	app.Commands = []cli.Command{
 		//clientCommand,
-		//gatewayCommand,
+		gatewayCommand,
 		serverCommand,
 	}
 
 	app.Run(os.Args)
 }
 
-type GlobalOptions struct{}
+type globalOptions struct{}
 
-func ParseGlobalOptions(c *cli.Context) (*GlobalOptions, error) {
-	return &GlobalOptions{}, nil
+func parseGlobalOptions(c *cli.Context) (*globalOptions, error) {
+	return &globalOptions{}, nil
 }
 
-var ErrorExitCode = cli.NewExitError("", 1)
+var errorExitCode = cli.NewExitError("", 1)

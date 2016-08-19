@@ -1,0 +1,49 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: blueprint
+  labels:
+    branch: ${WERCKER_GIT_BRANCH}
+    commit: ${WERCKER_GIT_COMMIT}
+spec:
+  replicas: ${TPL_REPLICAS:-1}
+  selector:
+    matchLabels:
+      app: blueprint
+  template:
+    metadata:
+      labels:
+        app: blueprint
+        branch: ${WERCKER_GIT_BRANCH}
+        commit: ${WERCKER_GIT_COMMIT}
+    spec:
+      imagePullSecrets:
+      - name: quay-readonly
+      nodeSelector:
+        caste: patrician
+      containers:
+      - name: server
+        image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
+        args: [
+          "server",
+        ]
+        ports:
+        - name: server
+          containerPort: 666
+          protocol: TCP
+        env:
+          - name: MONGODB_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: connectionstring
+      - name: gateway
+        image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
+        args: [
+          "gateway"
+        ]
+        ports:
+        - name: gateway
+          containerPort: 667
+          protocol: TCP

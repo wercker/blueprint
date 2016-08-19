@@ -10,8 +10,8 @@ build:
         name: go vet
         code: govendor vet +local
 
-    - golint:
-        exclude: vendor
+#    - golint:
+#        exclude: vendor
 
     - script:
         name: force "go get" over ssh
@@ -65,10 +65,6 @@ push-quay:
         name: forward deployment scripts
         code: cp -r deployment $WERCKER_OUTPUT_DIR/deployment
 
-    - script:
-        name: prune
-        code: rm -rf /pipeline
-
     - internal/docker-push:
         repository: quay.io/wercker/blueprint
         registry: https://quay.io
@@ -76,21 +72,20 @@ push-quay:
         password: $DOCKER_PASSWORD
         tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
         entrypoint: /blueprint
-        ports: 666
+        ports: 666,667
 
 deploy-kube:
-  box:
-    id: quay.io/wercker/deploy-box:master
-    username: $DOCKER_USERNAME
-    password: $DOCKER_PASSWORD
-    registry: https://quay.io
-    cmd: /bin/sh
   steps:
     - bash-template:
         cwd: deployment
+
     - script:
-        name: copy generated templates to step output
-        code: cp ./deployment/* $WERCKER_REPORT_ARTIFACTS_DIR/
+        name: merge kubernetes files
+        cwd: deployment
+        code: |
+          rm *.template.yml
+          cat *.yml > blueprint.yml
+          cp *.yml $WERCKER_REPORT_ARTIFACTS_DIR/
 
     - kubectl:
         name: deploy to kubernetes
@@ -98,4 +93,4 @@ deploy-kube:
         server: $KUBERNETES_MASTER
         token: $KUBERNETES_TOKEN
         insecure-skip-tls-verify: true
-        command: apply -f kube.yml
+        command: apply -f blueprint.yml

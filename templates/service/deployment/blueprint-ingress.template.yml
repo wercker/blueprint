@@ -1,0 +1,14 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: blueprint
+spec:
+  rules:
+    - host: ${TPL_INGRESS_HOST}
+      http:
+        paths:
+        - path: /api/v3/blueprint
+          backend:
+            serviceName: blueprint
+            servicePort: 8080

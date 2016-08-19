@@ -25,6 +25,12 @@
 			"revisionTime": "2016-07-27T17:26:17Z"
 		},
 		{
+			"checksumSHA1": "juNiTc9bfhQYo4BkWc83sW4Z5gw=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"revision": "f592bd283e9ef86337a432eb50e592278c3d534d",
+			"revisionTime": "2016-08-17T17:41:13Z"
+		},
+		{
 			"checksumSHA1": "0uWDQrsSzyQHYg5et19xtS+EWmY=",
 			"path": "github.com/grpc-ecosystem/grpc-gateway/runtime",
 			"revision": "ccd4e6b091a44f9f6b32848ffc63b3e8f8e26092",

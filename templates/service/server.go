@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v1"
 
 	log "github.com/Sirupsen/logrus"
@@ -29,8 +29,9 @@ var serverCommand = cli.Command{
 			EnvVar: "PORT",
 		},
 		cli.StringFlag{
-			Name:  "mongo",
-			Value: "mongodb://localhost:27017/blueprint",
+			Name:   "mongo",
+			Value:  "mongodb://localhost:27017/blueprint",
+			EnvVar: "MONGODB_URI",
 		},
 		cli.StringFlag{
 			Name:  "state-store",
@@ -41,16 +42,16 @@ var serverCommand = cli.Command{
 }
 
 var serverAction = func(c *cli.Context) error {
-	o, err := ParseServerOptions(c)
+	o, err := parseServerOptions(c)
 	if err != nil {
 		log.WithError(err).Error("Unable to validate arguments")
-		return ErrorExitCode
+		return errorExitCode
 	}
 
 	store, err := getStore(o)
 	if err != nil {
 		log.WithError(err).Error("Unable to create state store")
-		return ErrorExitCode
+		return errorExitCode
 	}
 	defer store.Close()
 
@@ -71,7 +72,7 @@ var serverAction = func(c *cli.Context) error {
 	server, err := server.New(store)
 	if err != nil {
 		log.WithError(err).Error("Unable to create server")
-		return ErrorExitCode
+		return errorExitCode
 	}
 
 	s := grpc.NewServer()
@@ -82,19 +83,19 @@ var serverAction = func(c *cli.Context) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", o.Port))
 	if err != nil {
 		log.WithField("port", o.Port).WithError(err).Error("Failed to listen")
-		return ErrorExitCode
+		return errorExitCode
 	}
 
 	err = s.Serve(lis)
 	if err != nil {
 		log.WithError(err).Error("Failed to serve gRPC")
-		return ErrorExitCode
+		return errorExitCode
 	}
 
 	return nil
 }
 
-func getStore(o *ServerOptions) (state.Store, error) {
+func getStore(o *serverOptions) (state.Store, error) {
 	switch o.StateStore {
 	case "mongo":
 		return getMongoStore(o)
@@ -103,7 +104,7 @@ func getStore(o *ServerOptions) (state.Store, error) {
 	}
 }
 
-func getMongoStore(o *ServerOptions) (*state.MongoStore, error) {
+func getMongoStore(o *serverOptions) (*state.MongoStore, error) {
 	log.WithField("", o.MongoURI).Debug("Creating MongoDB store")
 
 	log.Debug("Dialing the MongoDB cluster")
@@ -120,9 +121,8 @@ func getMongoStore(o *ServerOptions) (*state.MongoStore, error) {
 	return store, nil
 }
 
-// ServerOptions are the options available for the server command.
-type ServerOptions struct {
-	*GlobalOptions
+type serverOptions struct {
+	*globalOptions
 	Port         int
 	HealthPort   int
 	StateStore   string
@@ -130,23 +130,22 @@ type ServerOptions struct {
 	CookieSecret string
 }
 
-// ParseServerOptions will parse the options that apply to the server command.
-func ParseServerOptions(c *cli.Context) (*ServerOptions, error) {
-	globalOptions, err := ParseGlobalOptions(c)
+func parseServerOptions(c *cli.Context) (*serverOptions, error) {
+	gopts, err := parseGlobalOptions(c)
 	if err != nil {
 		return nil, err
 	}
 
 	port := c.Int("port")
-	if validPortNumber(port) {
+	if !validPortNumber(port) {
 		return nil, fmt.Errorf("Invalid port number: %d", port)
 	}
 
 	stateStore := c.String("state-store")
 	mongoURI := c.String("mongo")
 
-	return &ServerOptions{
-		GlobalOptions: globalOptions,
+	return &serverOptions{
+		globalOptions: gopts,
 		Port:          port,
 		StateStore:    stateStore,
 		MongoURI:      mongoURI,

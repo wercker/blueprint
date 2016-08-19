@@ -47,7 +47,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:  "output",
-			Value: "./output",
+			Value: "",
 		},
 		cli.StringFlag{
 			Name:  "name",
@@ -72,12 +72,15 @@ func main() {
 }
 
 var action = func(c *cli.Context) error {
-	vars := getVars(c)
-
-	log.Println("Variables:")
-	dumpVars(vars)
-
-	output := vars["Output"]
+	output := c.GlobalString("output")
+	if output == "" {
+		name := c.GlobalString("name")
+		if name != "" {
+			output = name
+		} else {
+			output = "output"
+		}
+	}
 
 	template := c.GlobalString("template")
 	if template == "" {
@@ -115,6 +118,10 @@ var action = func(c *cli.Context) error {
 		}).Error("Output directory aready exists")
 		return ErrorExitCode
 	}
+
+	vars := getVars(c, output)
+	log.Println("Variables:")
+	dumpVars(vars)
 
 	err = os.MkdirAll(output, 0777)
 	if err != nil {
@@ -242,6 +249,7 @@ var replacements [][]string = [][]string{
 	[]string{"666", "{{.Port}}"},
 	[]string{"667", "{{.Gateway}}"},
 	[]string{"TiVo for VRML", "{{.Description}}"},
+	[]string{"1996", "{{.Year}}"},
 }
 
 func replaceSentinels(s string) string {
@@ -273,26 +281,28 @@ type question struct {
 	Validators []Validator
 }
 
-func getVars(c *cli.Context) map[string]string {
+func getVars(c *cli.Context, outputPath string) map[string]string {
 	name := c.GlobalString("name")
 	if name == "" {
-		name = "output"
+		name = path.Base(outputPath)
 	}
+
 	description := c.GlobalString("description")
 	if description == "" {
 		description = "I am too lazy to write a description for my project and am a bad person"
 	}
+
 	port := c.GlobalString("port")
 	if port == "" {
 		port = strconv.Itoa(randomInt(1024, 65535))
 	}
+
 	portInt, _ := strconv.Atoi(port)
 	gateway := strconv.Itoa(portInt + 1)
 	ask := !c.GlobalBool("y")
 
 	result := map[string]string{
 		"Name":        name,
-		"Output":      name,
 		"Port":        port,
 		"Description": description,
 		"Gateway":     gateway,
