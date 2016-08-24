@@ -127,7 +127,6 @@ type serverOptions struct {
 	HealthPort   int
 	StateStore   string
 	MongoURI     string
-	CookieSecret string
 }
 
 func parseServerOptions(c *cli.Context) (*serverOptions, error) {
