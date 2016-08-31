@@ -20,7 +20,7 @@ var gatewayCommand = cli.Command{
 	Action: gatewayAction,
 	Flags: []cli.Flag{
 		cli.IntFlag{
-			Name:   "port, p",
+			Name:   "port",
 			Value:  667,
 			EnvVar: "HTTP_PORT",
 		},
@@ -33,8 +33,9 @@ var gatewayCommand = cli.Command{
 }
 
 var gatewayAction = func(c *cli.Context) error {
-	log.Info("Starting gRPC gateway")
+	log.Info("Starting blueprint gateway")
 
+	log.Debug("Parsing gateway options")
 	o, err := parseGatewayOptions(c)
 	if err != nil {
 		log.WithError(err).Error("Unable to validate arguments")
@@ -65,14 +66,12 @@ var gatewayAction = func(c *cli.Context) error {
 func parseGatewayOptions(c *cli.Context) (*gatewayOptions, error) {
 	port := c.Int("port")
 	if !validPortNumber(port) {
-		return nil, ErrInvalidPortNumber
+		return nil, fmt.Errorf("Invalid port number: %d", port)
 	}
-
-	host := c.String("host")
 
 	return &gatewayOptions{
 		Port: port,
-		Host: host,
+		Host: c.String("host"),
 	}, nil
 }
 

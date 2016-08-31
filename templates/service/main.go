@@ -26,10 +26,8 @@ func main() {
 	app.Run(os.Args)
 }
 
-type globalOptions struct{}
-
-func parseGlobalOptions(c *cli.Context) (*globalOptions, error) {
-	return &globalOptions{}, nil
-}
-
 var errorExitCode = cli.NewExitError("", 1)
+
+func validPortNumber(port int) bool {
+	return port > 0 && port < 65535
+}

@@ -15,9 +15,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// ErrInvalidPortNumber occurs if passing in a port that is not valid
-var ErrInvalidPortNumber = errors.New("Invalid port number")
-
 var serverCommand = cli.Command{
 	Name:   "server",
 	Usage:  "start gRPC server",
@@ -30,8 +27,12 @@ var serverCommand = cli.Command{
 		},
 		cli.StringFlag{
 			Name:   "mongo",
-			Value:  "mongodb://localhost:27017/blueprint",
+			Value:  "mongodb://localhost:27017",
 			EnvVar: "MONGODB_URI",
+		},
+		cli.StringFlag{
+			Name:  "mongo-database",
+			Value: "blueprint",
 		},
 		cli.StringFlag{
 			Name:  "state-store",
@@ -42,6 +43,9 @@ var serverCommand = cli.Command{
 }
 
 var serverAction = func(c *cli.Context) error {
+	log.Info("Starting blueprint server")
+
+	log.Debug("Parsing server options")
 	o, err := parseServerOptions(c)
 	if err != nil {
 		log.WithError(err).Error("Unable to validate arguments")
@@ -55,20 +59,7 @@ var serverAction = func(c *cli.Context) error {
 	}
 	defer store.Close()
 
-	//go func() {
-	//log.Printf("Starting health server on port: %d", o.HealthPort)
-
-	//checker := health.New()
-
-	//// Add store if it supports a Probe
-	//if storeProbe, ok := interface{}(store).(health.Probe); ok {
-	//checker.RegisterProbe("store", storeProbe)
-	//}
-
-	//log.Printf("Health server stopped: %+v", checker.ListenAndServe(fmt.Sprintf(":%d", o.HealthPort)))
-	//}()
-
-	log.Info("Creating server")
+	log.Debug("Creating server")
 	server, err := server.New(store)
 	if err != nil {
 		log.WithError(err).Error("Unable to create server")
@@ -78,14 +69,13 @@ var serverAction = func(c *cli.Context) error {
 	s := grpc.NewServer()
 	core.RegisterBlueprintServer(s, server)
 
-	log.WithField("port", o.Port).Info("Starting server on port")
-
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", o.Port))
 	if err != nil {
 		log.WithField("port", o.Port).WithError(err).Error("Failed to listen")
 		return errorExitCode
 	}
 
+	log.WithField("port", o.Port).Info("Starting server")
 	err = s.Serve(lis)
 	if err != nil {
 		log.WithError(err).Error("Failed to serve gRPC")
@@ -95,62 +85,50 @@ var serverAction = func(c *cli.Context) error {
 	return nil
 }
 
-func getStore(o *serverOptions) (state.Store, error) {
-	switch o.StateStore {
-	case "mongo":
-		return getMongoStore(o)
-	default:
-		return nil, fmt.Errorf("Invalid state driver: %s", o.StateStore)
-	}
-}
-
-func getMongoStore(o *serverOptions) (*state.MongoStore, error) {
-	log.WithField("", o.MongoURI).Debug("Creating MongoDB store")
-
-	log.Debug("Dialing the MongoDB cluster")
-	session, err := mgo.Dial(o.MongoURI)
-	if err != nil {
-		return nil, errors.Wrap(err, "Dialing the MongoDB cluster failed")
-	}
-
-	store, err := state.NewMongoStore(session, "")
-	if err != nil {
-		return nil, errors.Wrap(err, "Creating MongoDB store failed")
-	}
-
-	return store, nil
-}
-
 type serverOptions struct {
-	*globalOptions
-	Port         int
-	HealthPort   int
-	StateStore   string
-	MongoURI     string
+	MongoDatabase string
+	MongoURI      string
+	Port          int
+	StateStore    string
 }
 
 func parseServerOptions(c *cli.Context) (*serverOptions, error) {
-	gopts, err := parseGlobalOptions(c)
-	if err != nil {
-		return nil, err
-	}
-
 	port := c.Int("port")
 	if !validPortNumber(port) {
 		return nil, fmt.Errorf("Invalid port number: %d", port)
 	}
 
-	stateStore := c.String("state-store")
-	mongoURI := c.String("mongo")
-
 	return &serverOptions{
-		globalOptions: gopts,
+		MongoDatabase: c.String("mongo-database"),
+		MongoURI:      c.String("mongo"),
 		Port:          port,
-		StateStore:    stateStore,
-		MongoURI:      mongoURI,
+		StateStore:    c.String("state-store"),
 	}, nil
 }
 
-func validPortNumber(port int) bool {
-	return port > 0 && port < 65535
+func getStore(o *serverOptions) (state.Store, error) {
+	switch o.StateStore {
+	case "mongo":
+		return getMongoStore(o)
+	default:
+		return nil, fmt.Errorf("Invalid store: %s", o.StateStore)
+	}
+}
+
+func getMongoStore(o *serverOptions) (*state.MongoStore, error) {
+	log.Info("Creating MongoDB store")
+
+	log.WithField("MongoURI", o.MongoURI).Debug("Dialing the MongoDB cluster")
+	session, err := mgo.Dial(o.MongoURI)
+	if err != nil {
+		return nil, errors.Wrap(err, "Dialing the MongoDB cluster failed")
+	}
+
+	log.WithField("MongoDatabase", o.MongoDatabase).Debug("Creating MongoDB store")
+	store, err := state.NewMongoStore(session, o.MongoDatabase)
+	if err != nil {
+		return nil, errors.Wrap(err, "Creating MongoDB store failed")
+	}
+
+	return store, nil
 }
