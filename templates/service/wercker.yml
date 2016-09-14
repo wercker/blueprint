@@ -58,6 +58,10 @@ push-quay:
           apk update && apk add ca-certificates
 
     - script:
+        name: add blueprint user
+        code: adduser blueprint -D -u 1234
+
+    - script:
         name: prepare
         code: mv ./blueprint /blueprint
 
@@ -73,6 +77,7 @@ push-quay:
         tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
         entrypoint: /blueprint
         ports: 666,667
+        user: 1234
 
 deploy-kube:
   steps:

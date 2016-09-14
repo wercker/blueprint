@@ -38,6 +38,9 @@ spec:
               secretKeyRef:
                 name: mongo
                 key: connectionstring
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
       - name: gateway
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [
@@ -47,3 +50,6 @@ spec:
         - name: gateway
           containerPort: 667
           protocol: TCP
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
