@@ -16,7 +16,7 @@ import (
 
 var gatewayCommand = cli.Command{
 	Name:   "gateway",
-	Usage:  "Starts environment variable HTTP->gRPC gateway",
+	Usage:  "Start gRPC gateway",
 	Action: gatewayAction,
 	Flags: []cli.Flag{
 		cli.IntFlag{
@@ -57,8 +57,8 @@ var gatewayAction = func(c *cli.Context) error {
 
 	authMiddleware := middleware.AuthTokenMiddleware(mux)
 
-	log.Printf("Listening on port %v\n", o.Port)
-	http.ListenAndServe(fmt.Sprintf(":%v", o.Port), authMiddleware)
+	log.Printf("Listening on port %d", o.Port)
+	http.ListenAndServe(fmt.Sprintf(":%d", o.Port), authMiddleware)
 
 	return nil
 }
