@@ -28,4 +28,4 @@ blueprint
 !/vendor/vendor.json
 /.wercker
 
-.DS_STORE
+.DS_Store

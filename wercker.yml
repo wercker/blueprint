@@ -58,7 +58,7 @@ build:
           mv ./step-registry ../step-registry
           cd ../step-registry
           govendor sync
-          ./generate-protobuf.sh
+          govendor generate +local
 
           go build
 
