@@ -27,6 +27,14 @@ You're going to need the plugins installed globally (the binaries in your path)
   go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
   go get -u github.com/golang/protobuf/protoc-gen-go
 ```
+# Generating the protobufs
+
+We use go generate
+
+```
+govendor generate +local
+```
+
 
 
 # How to Write Templates
