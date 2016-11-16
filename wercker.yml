@@ -1,5 +1,5 @@
 build:
-  box: golang:1.6
+  box: golang:1.7
   base-path: /go/src/github.com/wercker/blueprint
   steps:
     - install-packages:
@@ -59,6 +59,5 @@ build:
           cd ../step-registry
           govendor sync
           govendor generate +local
-
           go build
 
