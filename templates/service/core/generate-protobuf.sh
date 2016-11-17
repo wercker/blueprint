@@ -28,3 +28,7 @@ protoc -I/usr/local/include \
   -I../vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
   --swagger_out=logtostderr=true:. \
   blueprint.proto
+
+# This hack is to ensure that we're using the context provided by the request
+echo "Applying context hack to gateway"
+sed -i 's/ctx, cancel := context\.WithCancel(ctx)/ctx, cancel := context.WithCancel(req.Context())/g' blueprint.pb.gw.go
