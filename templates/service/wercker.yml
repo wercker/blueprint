@@ -1,4 +1,4 @@
-box: golang:1.6
+box: golang:1.7
 build:
   base-path: /go/src/github.com/wercker/blueprint/templates/service
   steps:
