@@ -10,8 +10,8 @@ build:
         name: go vet
         code: govendor vet +local
 
-#    - golint:
-#        exclude: vendor
+    - golint:
+        exclude: "^vendor|^core/blueprint\\.pb\\.go|^core/blueprint\\.pb\\.gw.go"
 
     - script:
         name: force "go get" over ssh

@@ -25,6 +25,7 @@ func NewMongoStore(session *mgo.Session, databaseName string) (*MongoStore, erro
 	}, nil
 }
 
+// MongoStore is an implementation of Store using Mongo as the database.
 type MongoStore struct {
 	session *mgo.Session
 
@@ -34,6 +35,8 @@ type MongoStore struct {
 
 var _ Store = (*MongoStore)(nil)
 
+// Healthy return nil if nothing is wrong. If it is unable to Ping Mongo it
+// will try to refresh the session and will return the err.
 func (s *MongoStore) Healthy() error {
 	err := s.session.Ping()
 	if err != nil {
@@ -47,6 +50,7 @@ func (s *MongoStore) Healthy() error {
 	return nil
 }
 
+// Close calls Close on the Mongo session.
 func (s *MongoStore) Close() error {
 	s.session.Close()
 	return nil
