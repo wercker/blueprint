@@ -41,6 +41,13 @@ spec:
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 50m
+            memory: 25Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
       - name: gateway
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [
@@ -53,3 +60,10 @@ spec:
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 50m
+            memory: 25Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
