@@ -61,6 +61,24 @@
 			"revisionTime": "2016-08-01T10:26:19Z"
 		},
 		{
+			"checksumSHA1": "hIEmcd7hIDqO/xWSp1rJJHd0TpE=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e",
+			"revisionTime": "2016-11-17T07:43:51Z"
+		},
+		{
+			"checksumSHA1": "cKBlbfqUWhlImzYUu0QFw1hOHwI=",
+			"path": "github.com/stretchr/testify/mock",
+			"revision": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e",
+			"revisionTime": "2016-11-17T07:43:51Z"
+		},
+		{
+			"checksumSHA1": "omdvCNu8sJIc9FbOfObC484M7Dg=",
+			"path": "github.com/stretchr/testify/require",
+			"revision": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e",
+			"revisionTime": "2016-11-17T07:43:51Z"
+		},
+		{
 			"checksumSHA1": "lLwoorVRJecmHPGChm3wUSjDr3s=",
 			"path": "github.com/wercker/auth/middleware",
 			"revision": "2fff3a430e9599221a8d9899a1ad1fc7d17b8390",
