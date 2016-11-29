@@ -29,3 +29,4 @@ blueprint
 /.wercker
 
 .DS_Store
+*.swp
