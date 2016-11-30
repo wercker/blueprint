@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,8 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	othttp "github.com/opentracing-contrib/go-stdlib/nethttp"
 	"github.com/wercker/auth/middleware"
 	"github.com/wercker/blueprint/templates/service/core"
 	"golang.org/x/net/context"
@@ -29,6 +32,16 @@ var gatewayCommand = cli.Command{
 			Value:  "localhost:666",
 			EnvVar: "GRPC_HOST",
 		},
+		cli.BoolFlag{
+			Name:   "trace",
+			EnvVar: "TRACING_ENABLED",
+			Usage:  "Enable tracing",
+		},
+		cli.StringFlag{
+			Name:   "trace-endpoint",
+			EnvVar: "TRACING_ENDPOINT",
+			Usage:  "Endpoint for the tracing data",
+		},
 	},
 }
 
@@ -47,8 +60,21 @@ var gatewayAction = func(c *cli.Context) error {
 	defer cancel()
 
 	mux := runtime.NewServeMux()
-
 	opts := []grpc.DialOption{grpc.WithInsecure()}
+	handler := middleware.AuthTokenMiddleware(mux)
+
+	if o.Trace {
+		log.Info("Tracing is enabled")
+		tracer, err := getTracer(o.TraceEndpoint, "blueprint-gw", fmt.Sprintf(":%d", o.Port), false, false)
+		if err != nil {
+			log.WithError(err).Error("Unable to create a tracer")
+			return errorExitCode
+		}
+		handler = othttp.Middleware(tracer, handler)
+		opts = append(opts, grpc.WithUnaryInterceptor(
+			otgrpc.OpenTracingClientInterceptor(tracer)))
+	}
+
 	err = core.RegisterBlueprintHandlerFromEndpoint(ctx, mux, o.Host, opts)
 	if err != nil {
 		log.WithError(err).Error("Unable to register handler from Endpoint")
@@ -58,7 +84,7 @@ var gatewayAction = func(c *cli.Context) error {
 	authMiddleware := middleware.AuthTokenMiddleware(mux)
 
 	log.Printf("Listening on port %d", o.Port)
-	http.ListenAndServe(fmt.Sprintf(":%d", o.Port), authMiddleware)
+	http.ListenAndServe(fmt.Sprintf(":%d", o.Port), handler)
 
 	return nil
 }
@@ -69,13 +95,23 @@ func parseGatewayOptions(c *cli.Context) (*gatewayOptions, error) {
 		return nil, fmt.Errorf("Invalid port number: %d", port)
 	}
 
+	trace := c.Bool("trace")
+	traceEndpoint := c.String("trace-endpoint")
+	if trace && traceEndpoint == "" {
+		return nil, errors.New("Trace endpoint is required")
+	}
+
 	return &gatewayOptions{
-		Port: port,
-		Host: c.String("host"),
+		Port:          port,
+		Host:          c.String("host"),
+		Trace:         trace,
+		TraceEndpoint: traceEndpoint,
 	}, nil
 }
 
 type gatewayOptions struct {
-	Port int
-	Host string
+	Port          int
+	Host          string
+	Trace         bool
+	TraceEndpoint string
 }

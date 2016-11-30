@@ -7,10 +7,52 @@
 			"revision": ""
 		},
 		{
+			"checksumSHA1": "zVTDR7RxyzflslTMLc1x7WdC8SE=",
+			"path": "github.com/Shopify/sarama",
+			"revision": "fd498173ae2bfc49a2b4eb19353241317785e7e6",
+			"revisionTime": "2016-10-25T21:47:28Z"
+		},
+		{
 			"checksumSHA1": "yXrS4e4yxaRBu/MX+39X3cS4kbg=",
 			"path": "github.com/Sirupsen/logrus",
 			"revision": "a283a10442df8dc09befd873fab202bf8a253d6a",
 			"revisionTime": "2016-07-16T02:56:31Z"
+		},
+		{
+			"checksumSHA1": "B6ZUzckOOwd699eDnJIPqDiWB0I=",
+			"path": "github.com/apache/thrift/lib/go/thrift",
+			"revision": "4337983d157dd7041c17340107682f26d2c0c795",
+			"revisionTime": "2016-11-14T17:39:33Z"
+		},
+		{
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"revisionTime": "2016-10-29T20:57:26Z"
+		},
+		{
+			"checksumSHA1": "y2Kh4iPlgCPXSGTCcFpzePYdzzg=",
+			"path": "github.com/eapache/go-resiliency/breaker",
+			"revision": "b86b1ec0dd4209a588dc1285cdd471e73525c0b3",
+			"revisionTime": "2016-01-04T19:15:39Z"
+		},
+		{
+			"checksumSHA1": "WHl96RVZlOOdF4Lb1OOadMpw8ls=",
+			"path": "github.com/eapache/go-xerial-snappy",
+			"revision": "bb955e01b9346ac19dc29eb16586c90ded99a98c",
+			"revisionTime": "2016-06-09T14:24:08Z"
+		},
+		{
+			"checksumSHA1": "oCCs6kDanizatplM5e/hX76busE=",
+			"path": "github.com/eapache/queue",
+			"revision": "44cc805cf13205b55f69e14bcb69867d1ae92f98",
+			"revisionTime": "2016-08-05T00:47:13Z"
+		},
+		{
+			"checksumSHA1": "oDNpaVF/BHUyme8A7RoBAH2q6is=",
+			"path": "github.com/gogo/protobuf/proto",
+			"revision": "8d70fb3182befc465c4a1eac8ad4d38ff49778e2",
+			"revisionTime": "2016-11-05T09:51:13Z"
 		},
 		{
 			"checksumSHA1": "NgOgDwqQnfQhahsECFCsSPEenE0=",
@@ -29,6 +71,12 @@
 			"path": "github.com/golang/protobuf/protoc-gen-go/descriptor",
 			"revision": "f592bd283e9ef86337a432eb50e592278c3d534d",
 			"revisionTime": "2016-08-17T17:41:13Z"
+		},
+		{
+			"checksumSHA1": "W+E/2xXcE1GmJ0Qb784ald0Fn6I=",
+			"path": "github.com/golang/snappy",
+			"revision": "d9eb7a3d35ec988b8585d4a0068e462c27d28380",
+			"revisionTime": "2016-05-29T05:00:41Z"
 		},
 		{
 			"checksumSHA1": "0uWDQrsSzyQHYg5et19xtS+EWmY=",
@@ -55,10 +103,94 @@
 			"revisionTime": "2016-08-08T06:56:29Z"
 		},
 		{
+			"checksumSHA1": "942Q6q1nXweucbrJvkLazl2ap/o=",
+			"path": "github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc",
+			"revision": "8fa31758f85ff84c4f21071a156e7a5539a93795",
+			"revisionTime": "2016-10-29T13:15:54Z"
+		},
+		{
+			"checksumSHA1": "BM6ZlNJmtKy3GBoWwg2X55gnZ4A=",
+			"path": "github.com/klauspost/crc32",
+			"revision": "cb6bfca970f6908083f26f39a79009d608efd5cd",
+			"revisionTime": "2016-10-16T15:41:25Z"
+		},
+		{
+			"checksumSHA1": "QTLHIDIubrhweCegl4ZBJMramZ4=",
+			"path": "github.com/mwitkow/go-grpc-middleware",
+			"revision": "e32d89015bae0f74206a52a292b9da2407f51954",
+			"revisionTime": "2016-11-12T10:23:46Z"
+		},
+		{
+			"checksumSHA1": "qTufzbS65BioVuA/C2ejqZOjZ5c=",
+			"path": "github.com/opentracing-contrib/go-stdlib/nethttp",
+			"revision": "75e37ae3e209c490d2aa67d8a31fb302fdc38cba",
+			"revisionTime": "2016-10-04T19:59:12Z"
+		},
+		{
+			"checksumSHA1": "yNZxitaFoLFIJtD3R4Y6eDugXhk=",
+			"path": "github.com/opentracing/opentracing-go",
+			"revision": "902ca977fd85455c364050f985eba376b44315f0",
+			"revisionTime": "2016-10-11T06:34:14Z"
+		},
+		{
+			"checksumSHA1": "+q64ZAwI2qF5goM1mLjav88NOYQ=",
+			"path": "github.com/opentracing/opentracing-go/ext",
+			"revision": "902ca977fd85455c364050f985eba376b44315f0",
+			"revisionTime": "2016-10-11T06:34:14Z"
+		},
+		{
+			"checksumSHA1": "0bkFiSz3kLFG45wp0XFeg/ll5qg=",
+			"path": "github.com/opentracing/opentracing-go/log",
+			"revision": "902ca977fd85455c364050f985eba376b44315f0",
+			"revisionTime": "2016-10-11T06:34:14Z"
+		},
+		{
+			"checksumSHA1": "r61N32+/RJOyMkiptM53aSf5OkE=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
+			"checksumSHA1": "1HybJ2ha9Zd7AtN6VfoHxueG+NE=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing/_thrift/gen-go/scribe",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
+			"checksumSHA1": "EzGbZPnkLSxskuXj/1kqlaIQwzA=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing/_thrift/gen-go/zipkincore",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
+			"checksumSHA1": "kC4Y7lGVaheJmjEz8CqQx3yhCAg=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing/flag",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
+			"checksumSHA1": "Op6jFHB18rC99wIur01iSo7ePRg=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing/types",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
+			"checksumSHA1": "AIBKJuQ9zOb+/2fGDjUdAflRKBY=",
+			"path": "github.com/openzipkin/zipkin-go-opentracing/wire",
+			"revision": "e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9",
+			"revisionTime": "2016-11-02T11:31:26Z"
+		},
+		{
 			"checksumSHA1": "2HSjyUZ4IMkCeA34TjJ0/f+Kk/k=",
 			"path": "github.com/pkg/errors",
 			"revision": "2a9be18ecd8c148be18be08a811e33809206da19",
 			"revisionTime": "2016-08-01T10:26:19Z"
+		},
+		{
+			"checksumSHA1": "GiX6yRUzizn1C+ckgj1xLFLoz8g=",
+			"path": "github.com/rcrowley/go-metrics",
+			"revision": "ab2277b1c5d15c3cba104e9cbddbdfc622df5ad8",
+			"revisionTime": "2016-09-21T19:52:07Z"
 		},
 		{
 			"checksumSHA1": "lLwoorVRJecmHPGChm3wUSjDr3s=",
