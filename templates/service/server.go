@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net"
+	"os"
+	"os/signal"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v1"
@@ -75,12 +77,26 @@ var serverAction = func(c *cli.Context) error {
 		return errorExitCode
 	}
 
-	log.WithField("port", o.Port).Info("Starting server")
-	err = s.Serve(lis)
-	if err != nil {
-		log.WithError(err).Error("Failed to serve gRPC")
-		return errorExitCode
-	}
+	errc := make(chan error, 2)
+
+	// Shutdown on SIGINT, SIGTERM
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Kill, os.Interrupt)
+		errc <- fmt.Errorf("%s", <-c)
+	}()
+
+	// Start gRPC server in separate goroutine
+	go func() {
+		log.WithField("port", o.Port).Info("Starting server")
+		errc <- s.Serve(lis)
+	}()
+
+	err = <-errc
+	log.WithError(err).Info("Shutting down")
+
+	// Graceful shutdown the gRPC server
+	s.GracefulStop()
 
 	return nil
 }
