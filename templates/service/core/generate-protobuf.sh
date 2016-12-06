@@ -31,8 +31,7 @@ protoc -I/usr/local/include \
 
 # This hack is to ensure that we're using the context provided by the request
 echo "Applying context hack to gateway"
-unamestr=`uname`
-if [[ "$unamestr" == "Darwin" ]]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     sed -i '' 's/ctx, cancel := context\.WithCancel(ctx)/ctx, cancel := context.WithCancel(req.Context())/g' blueprint.pb.gw.go
 else
     sed -i 's/ctx, cancel := context\.WithCancel(ctx)/ctx, cancel := context.WithCancel(req.Context())/g' blueprint.pb.gw.go
