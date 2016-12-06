@@ -35,3 +35,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
     sed -i '' 's/ctx, cancel := context\.WithCancel(ctx)/ctx, cancel := context.WithCancel(req.Context())/g' blueprint.pb.gw.go
 else
     sed -i 's/ctx, cancel := context\.WithCancel(ctx)/ctx, cancel := context.WithCancel(req.Context())/g' blueprint.pb.gw.go
+fi
