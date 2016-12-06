@@ -2,17 +2,13 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
-	"strings"
-	"text/template"
 	"time"
 
 	cli "gopkg.in/urfave/cli.v1"
@@ -156,126 +152,6 @@ var action = func(c *cli.Context) error {
 	return nil
 }
 
-func createWalker(templateRoot, outputRoot string, vars map[string]string) func(string, os.FileInfo, error) error {
-	return func(p string, info os.FileInfo, err error) error {
-		relativePath := strings.TrimPrefix(p, templateRoot)
-		if relativePath == "" {
-			return nil
-		}
-
-		if info.Name() != "vendor" && info.Name() != "vendor.json" && strings.HasPrefix(relativePath, "/vendor") {
-			return nil
-		}
-		if strings.HasSuffix(info.Name(), ".swp") {
-			return nil
-		}
-
-		replacedPath := replaceSentinels(relativePath)
-
-		templatePath := path.Join(templateRoot, relativePath)
-
-		tmpl, err := template.
-			New(path.Join(outputRoot, relativePath)).
-			Funcs(Funcs).
-			Parse(path.Join(outputRoot, replacedPath))
-		if err != nil {
-			return err
-		}
-
-		var buf bytes.Buffer
-		err = tmpl.Execute(&buf, vars)
-		if err != nil {
-			return err
-		}
-		outputPath := buf.String()
-
-		if err != nil {
-			log.WithError(err).WithFields(log.Fields{
-				"path": p,
-			}).Error("Unable to access file")
-		} else if info.IsDir() {
-
-			return handleDirectory(templatePath, outputPath)
-		} else {
-			return handleFile(templatePath, outputPath, vars)
-		}
-		return nil
-	}
-}
-
-func handleDirectory(templatePath, outputPath string) error {
-	log.WithFields(log.Fields{
-		"path": outputPath,
-	}).Debug("Creating directory")
-	return os.Mkdir(outputPath, 0777)
-}
-
-func handleFile(templatePath, outputPath string, vars map[string]string) error {
-	log.WithFields(log.Fields{
-		"path": outputPath,
-	}).Debug("Expanding template")
-
-	f, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	// Make every .sh file executable
-	if path.Ext(outputPath) == ".sh" {
-		stat, err := f.Stat()
-		if err != nil {
-			return err
-		}
-
-		err = f.Chmod(stat.Mode() | 0700)
-		if err != nil {
-			return err
-		}
-	}
-
-	tmpl, err := getTemplate(templatePath)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.Execute(f, vars)
-}
-
-var replacements [][]string = [][]string{
-	[]string{"blueprint/templates/service", "{{lower .Name}}"},
-	[]string{"Blueprint", "{{title .Name}}"},
-	[]string{"blueprint", "{{lower .Name}}"},
-	[]string{"666", "{{.Port}}"},
-	[]string{"667", "{{.Gateway}}"},
-	[]string{"TiVo for VRML", "{{.Description}}"},
-	[]string{"1996", "{{.Year}}"},
-}
-
-func replaceSentinels(s string) string {
-	for _, x := range replacements {
-		search, replace := x[0], x[1]
-		s = strings.Replace(s, search, replace, -1)
-	}
-	return s
-}
-
-func getTemplate(templatePath string) (*template.Template, error) {
-	content, err := ioutil.ReadFile(templatePath)
-	if err != nil {
-		return nil, err
-	}
-	contentString := string(content)
-	contentString = replaceSentinels(contentString)
-
-	tmpl, err := template.New(templatePath).Funcs(Funcs).Parse(contentString)
-	if err != nil {
-		return nil, err
-	}
-
-	return tmpl, nil
-}
-
 type question struct {
 	Name       string
 	Validators []Validator
@@ -360,73 +236,6 @@ func getVars(c *cli.Context, outputPath string) map[string]string {
 	return result
 }
 
-var (
-	Integer                = &IntegerValidator{}
-	NoSpaces               = &NoSpacesValidator{}
-	Required               = &RequiredValidator{}
-	ValidNonPrivilegedPort = &ValidPortValidator{true}
-	ValidPort              = &ValidPortValidator{false}
-)
-
-type Validator interface {
-	Validate(val string) error
-}
-
-type RequiredValidator struct{}
-
-func (v *RequiredValidator) Validate(val string) error {
-	if val == "" {
-		return fmt.Errorf("Value is required")
-	}
-	return nil
-}
-
-type NoSpacesValidator struct{}
-
-func (v *NoSpacesValidator) Validate(val string) error {
-	if strings.Contains(val, " ") {
-		return fmt.Errorf("Value cannot contain a space")
-	}
-	return nil
-}
-
-type ValidPortValidator struct {
-	onlyNonPrivilegedPorts bool
-}
-
-func (v *ValidPortValidator) Validate(val string) error {
-	minPort := int64(1)
-	maxPort := int64(65535)
-
-	if v.onlyNonPrivilegedPorts {
-		minPort = 1024
-	}
-
-	i, err := strconv.ParseInt(val, 10, 64)
-	if err != nil {
-		return fmt.Errorf("Invalid port, requires %d-%d", minPort, maxPort)
-	}
-
-	if i < minPort || i > maxPort {
-		return fmt.Errorf("Invalid port, requires %d-%d", minPort, maxPort)
-	}
-
-	return nil
-}
-
-type IntegerValidator struct {
-	onlyNonPrivilegedPorts bool
-}
-
-func (v *IntegerValidator) Validate(val string) error {
-	_, err := strconv.ParseInt(val, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func dumpVars(vars map[string]string) {
 	keys := make([]string, len(vars))
 
@@ -448,22 +257,4 @@ func dumpVars(vars map[string]string) {
 func randomInt(min, max int) int {
 	i := rand.Int31n(int32(max - min))
 	return int(i) + min
-}
-
-func studly(s string) string {
-	parts := strings.Split(s, "-")
-	newParts := []string{}
-	for _, part := range parts {
-		newParts = append(newParts, strings.Title(part))
-	}
-	return strings.Join(newParts, "")
-}
-
-var Funcs template.FuncMap = template.FuncMap{
-	// "package": func(input string) string { return strings.ToLower(input) },
-	// "method":  func(input string) string { return strings.Title(input) },
-	// "class":   func(input string) string { return strings.Title(input) },
-	// "file":    func(input string) string { return strings.ToLower(input) },
-	"title": studly,
-	"lower": func(input string) string { return strings.ToLower(input) },
 }
