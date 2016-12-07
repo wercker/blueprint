@@ -56,7 +56,7 @@ Start a new project:
 
 Update a project that is already checked out in ./managed/$name:
 
-`blueprint update service $name`
+`blueprint apply service $name`
 
 
 
