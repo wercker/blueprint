@@ -15,11 +15,11 @@ look enough like this for the rest of the magic to work.
 file structure from blueprint root:
 
 ```
-- templates             # where templates are held
-  - service             # a template named service
-- managed               # where services managed by blueprint live
-  - inspector           # a service managed by blueprint
-    - .blueprint.json   # the config used to generate this service
+- templates           # where templates are held
+  - service           # a template named service
+- managed             # where services managed by blueprint live
+  - inspector         # a service managed by blueprint
+    - .managed.json   # the config used to generate this service
 ```
 
 git branch structure for a managed project
@@ -29,6 +29,8 @@ blueprint
       \-- short-lived branches
 ```
 
+TODO(termie): deleting old files?
+
 # Updating
 
 Our main flow will be to:
@@ -37,7 +39,7 @@ Our main flow will be to:
   2. Switch to `blueprint` branch
   3. Create a new branch called `blueprint_update`
   4. Update / overwrite the contents of the directory with the new code based
-     on existing `.blueprint.json`
+     on existing `.managed.json`
   5. Automatically (?) commit it and show a diff against the `blueprint` branch
   6. Continue y/n
   7. Switch to the `master` branch
@@ -54,7 +56,7 @@ Start a new project:
 
 Update a project that is already checked out in ./managed/$name:
 
-`blueprint update $name`
+`blueprint update service $name`
 
 
 
