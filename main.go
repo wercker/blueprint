@@ -16,6 +16,11 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+// TODO(bvdberg): create repo on github
+// TODO(bvdberg): add all files to repo
+// TODO(bvdberg): govendor sync
+// TODO(bvdberg): create wercker app (plus pipelines, env vars, etc) [staging, production]
+
 var ErrorExitCode = cli.NewExitError("", 1)
 
 func init() {
@@ -28,65 +33,46 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func main() {
-	app := cli.NewApp()
-
-	app.Name = "blueprint"
-	app.Usage = "Create new services"
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:  "templates-path",
-			Value: "./templates",
-		},
-		cli.StringFlag{
-			Name: "template",
-		},
-		cli.StringFlag{
-			Name:  "output",
-			Value: "",
-		},
-		cli.StringFlag{
-			Name:  "name",
-			Value: "",
-		},
-		cli.StringFlag{
-			Name:  "description",
-			Value: "",
-		},
-		cli.StringFlag{
-			Name:  "port",
-			Value: "",
-		},
-		cli.BoolFlag{
-			Name: "y",
-			// Value: "",
+var (
+	initCommand = cli.Command{
+		Name:  "init",
+		Usage: "start a new project based on a template",
+		Action: func(c *cli.Context) error {
+			err := initAction(c)
+			if err != nil {
+				fmt.Printf("%s\n", err.Error())
+			}
+			return err
 		},
 	}
-	app.Action = action
+)
 
-	app.Run(os.Args)
-}
-
-var action = func(c *cli.Context) error {
-	output := c.GlobalString("output")
-	if output == "" {
-		name := c.GlobalString("name")
-		if name != "" {
-			output = name
-		} else {
-			output = "output"
-		}
+// initAction generates a config and then does an apply on an empty dir
+func initAction(c *cli.Context) error {
+	if len(c.Args()) < 2 {
+		return fmt.Errorf("Need a template and a name")
 	}
+	template := c.Args()[0]
+	name := c.Args()[1]
+	port := randomInt(1024, 65535)
+	// port := strconv.Itoa(portInt)
+	gateway := port + 1
+	description := "I am too lazy to write a description for my project and am a bad person"
 
-	template := c.GlobalString("template")
-	if template == "" {
-		log.Error("template is required")
-		return ErrorExitCode
+	config := &Config{
+		Template:    template,
+		Name:        name,
+		Port:        port,
+		Gateway:     gateway,
+		Description: description,
+		Year:        time.Now().Format("2006"),
 	}
 
 	templatesPath := c.GlobalString("templates-path")
-	templatePath := path.Join(templatesPath, template)
+	managedPath := c.GlobalString("managed-path")
 
+	// verify template exists
+	templatePath := path.Join(templatesPath, template)
 	templateStats, err := os.Stat(templatePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -100,55 +86,65 @@ var action = func(c *cli.Context) error {
 		return cli.NewExitError("Template is not a directory", 1)
 	}
 
-	outputStats, err := os.Stat(output)
+	// verify output path isn't there (since we are initializing)
+	outputPath := path.Join(managedPath, name)
+	outputStats, err := os.Stat(outputPath)
 	if err != nil && !os.IsNotExist(err) {
 		log.WithError(err).WithFields(log.Fields{
-			"outputPath": output,
+			"outputPath": outputPath,
 		}).Error("Unable to access output directory")
 		return ErrorExitCode
 	}
 
 	if outputStats != nil {
 		log.WithFields(log.Fields{
-			"outputPath": output,
+			"outputPath": outputPath,
 		}).Error("Output directory aready exists")
 		return ErrorExitCode
 	}
 
-	vars := getVars(c, output)
-	log.Println("Variables:")
-	dumpVars(vars)
-
-	err = os.MkdirAll(output, 0777)
+	err = os.MkdirAll(outputPath, 0777)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"outputPath": output,
+			"outputPath": outputPath,
 		}).Error("Unable to create output directory")
 		return ErrorExitCode
 	}
 
-	log.WithFields(log.Fields{
-		"templatesPath": templatesPath,
-		"template":      template,
-	}).Debug("Traversing template directory")
+	return ApplyBlueprint(config, templatePath, outputPath)
+}
 
-	//fmt.Fprint(os.Stdout, "Continue? [Y/n]")
-	// TODO(bvdberg): read from stdin and check if it is Y or empty
+func main() {
+	app := cli.NewApp()
 
-	walker := createWalker(templatePath, output, vars)
-	err = filepath.Walk(templatePath, walker)
+	app.Name = "blueprint"
+	app.Usage = "Create and manage services"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "templates-path",
+			Value: "./templates",
+		},
+		cli.StringFlag{
+			Name:  "managed-path",
+			Value: "./managed",
+		},
+	}
+	app.Commands = []cli.Command{
+		initCommand,
+	}
+
+	app.Run(os.Args)
+}
+
+func ApplyBlueprint(cfg *Config, templatePath, outputPath string) error {
+	walker := createWalker(cfg, templatePath, outputPath)
+	err := filepath.Walk(templatePath, walker)
 	if err != nil {
 		log.WithError(err).WithFields(log.Fields{
-			"template": template,
+			"template": templatePath,
 		}).Error("Unable to traverse template directory")
 		return ErrorExitCode
 	}
-
-	// TODO(bvdberg): create repo on github
-	// TODO(bvdberg): add all files to repo
-	// TODO(bvdberg): govendor sync
-	// TODO(bvdberg): create wercker app (plus pipelines, env vars, etc) [staging, production]
-
 	return nil
 }
 

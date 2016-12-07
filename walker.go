@@ -10,7 +10,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-func createWalker(templateRoot, outputRoot string, vars map[string]string) func(string, os.FileInfo, error) error {
+func createWalker(cfg *Config, templateRoot, outputRoot string) func(string, os.FileInfo, error) error {
 	return func(p string, info os.FileInfo, err error) error {
 		relativePath := strings.TrimPrefix(p, templateRoot)
 		if relativePath == "" {
@@ -37,7 +37,7 @@ func createWalker(templateRoot, outputRoot string, vars map[string]string) func(
 		}
 
 		var buf bytes.Buffer
-		err = tmpl.Execute(&buf, vars)
+		err = tmpl.Execute(&buf, cfg)
 		if err != nil {
 			return err
 		}
@@ -51,7 +51,7 @@ func createWalker(templateRoot, outputRoot string, vars map[string]string) func(
 
 			return handleDirectory(templatePath, outputPath)
 		} else {
-			return handleFile(templatePath, outputPath, vars)
+			return handleFile(templatePath, outputPath, cfg)
 		}
 		return nil
 	}
@@ -64,7 +64,7 @@ func handleDirectory(templatePath, outputPath string) error {
 	return os.Mkdir(outputPath, 0777)
 }
 
-func handleFile(templatePath, outputPath string, vars map[string]string) error {
+func handleFile(templatePath, outputPath string, cfg *Config) error {
 	log.WithFields(log.Fields{
 		"path": outputPath,
 	}).Debug("Expanding template")
@@ -93,5 +93,5 @@ func handleFile(templatePath, outputPath string, vars map[string]string) error {
 		return err
 	}
 
-	return tmpl.Execute(f, vars)
+	return tmpl.Execute(f, cfg)
 }

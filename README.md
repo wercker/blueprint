@@ -1,6 +1,62 @@
 # blueprint
 
-Blueprint takes a template and turns it into a application.
+Blueprint takes a template and turns it into a application. And more!
+
+Blueprint is now a slightly neater system for managing the boilerplate for our
+services. It requires a couple things to be set up correctly (but it should
+set that up itself if it created the project), but it should allow us to fairly
+trivially keep the boilerplate of our applications up to date.
+
+# Design
+
+This is how a new project will be set up, we'll need to make existing projects
+look enough like this for the rest of the magic to work.
+
+file structure from blueprint root:
+
+```
+- templates             # where templates are held
+  - service             # a template named service
+- managed               # where services managed by blueprint live
+  - inspector           # a service managed by blueprint
+    - .blueprint.json   # the config used to generate this service
+```
+
+git branch structure for a managed project
+```
+blueprint
+  \-- master
+      \-- short-lived branches
+```
+
+# Updating
+
+Our main flow will be to:
+
+  1. Update remote branches for managed service `$service`
+  2. Switch to `blueprint` branch
+  3. Create a new branch called `blueprint_update`
+  4. Update / overwrite the contents of the directory with the new code based
+     on existing `.blueprint.json`
+  5. Automatically (?) commit it and show a diff against the `blueprint` branch
+  6. Continue y/n
+  7. Switch to the `master` branch
+  8. Create a new branch called `master_update`
+  9. `rebase -i blueprint_update`, try to do the rebase
+  10. If it all works, hard merge over master and ff-merge `blueprint_update` to
+      `blueprint`
+
+# Usage
+
+Start a new project:
+
+`blueprint init service $name`
+
+Update a project that is already checked out in ./managed/$name:
+
+`blueprint update $name`
+
+
 
 
 # Building Protobuf 3 Locally
