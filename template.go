@@ -1,9 +1,9 @@
 package main
 
 import (
-	"html/template"
 	"io/ioutil"
 	"strings"
+	"text/template"
 )
 
 var replacements [][]string = [][]string{

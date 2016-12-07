@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
-	"html/template"
 	"os"
 	"path"
 	"strings"
+	"text/template"
 
 	log "github.com/Sirupsen/logrus"
 )

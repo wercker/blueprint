@@ -42,8 +42,8 @@ build:
     - script:
         name: build output
         code: |
-          rm -rf ./output
-          ./blueprint --template service -y --name step-registry
+          rm -rf ./managed
+          ./blueprint init service step-registry
 
     - script:
         name: install protobuf plugins
@@ -55,7 +55,7 @@ build:
     - script:
         name: test output
         code: |
-          mv ./step-registry ../step-registry
+          mv ./managed/step-registry ../step-registry
           cd ../step-registry
           govendor sync
           govendor generate +local
