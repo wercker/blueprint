@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"path"
@@ -39,6 +41,17 @@ var (
 		Usage: "start a new project based on a template",
 		Action: func(c *cli.Context) error {
 			err := initAction(c)
+			if err != nil {
+				fmt.Printf("%s\n", err.Error())
+			}
+			return err
+		},
+	}
+	applyCommand = cli.Command{
+		Name:  "apply",
+		Usage: "update a project based on a template",
+		Action: func(c *cli.Context) error {
+			err := applyAction(c)
 			if err != nil {
 				fmt.Printf("%s\n", err.Error())
 			}
@@ -114,6 +127,40 @@ func initAction(c *cli.Context) error {
 	return ApplyBlueprint(config, templatePath, outputPath)
 }
 
+func applyAction(c *cli.Context) error {
+	if len(c.Args()) < 2 {
+		return fmt.Errorf("Need a template and a name")
+	}
+	template := c.Args()[0]
+	name := c.Args()[1]
+
+	templatesPath := c.GlobalString("templates-path")
+	managedPath := c.GlobalString("managed-path")
+
+	outputPath := path.Join(managedPath, name)
+	config, err := loadConfig(outputPath)
+	if err != nil {
+		return err
+	}
+
+	// verify template exists
+	templatePath := path.Join(templatesPath, template)
+	templateStats, err := os.Stat(templatePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return cli.NewExitError(fmt.Sprintf("Template not found: %s", template), 1)
+		}
+
+		return cli.NewExitError(fmt.Sprintf("Unable to access template: %+v", err), 1)
+	}
+
+	if !templateStats.IsDir() {
+		return cli.NewExitError("Template is not a directory", 1)
+	}
+
+	return ApplyBlueprint(config, templatePath, outputPath)
+}
+
 func main() {
 	app := cli.NewApp()
 
@@ -131,9 +178,26 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		initCommand,
+		applyCommand,
 	}
 
 	app.Run(os.Args)
+}
+
+func loadConfig(outputPath string) (*Config, error) {
+	var cfg Config
+
+	configPath := fmt.Sprintf("%s/.managed.json", outputPath)
+	b, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(b, &cfg)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
 
 func ApplyBlueprint(cfg *Config, templatePath, outputPath string) error {

@@ -1,0 +1,8 @@
+{
+  "Template": "service",
+  "Name": "blueprint",
+  "Port": 666,
+  "Gateway": 667,
+  "Year": "1996",
+  "Description": "Tivo for VRML"
+}

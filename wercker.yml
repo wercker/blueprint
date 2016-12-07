@@ -40,10 +40,17 @@ build:
         code: go build
 
     - script:
-        name: build output
+        name: init blueprint
         code: |
           rm -rf ./managed
           ./blueprint init service step-registry
+
+    - script:
+        name: apply blueprint
+        code: |
+          touch templates/service/FOO.txt
+          ./blueprint apply service step-registry
+          [[ -e ./managed/step-registry/FOO.txt ]] || exit 1
 
     - script:
         name: install protobuf plugins

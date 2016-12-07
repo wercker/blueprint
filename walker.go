@@ -48,7 +48,6 @@ func createWalker(cfg *Config, templateRoot, outputRoot string) func(string, os.
 				"path": p,
 			}).Error("Unable to access file")
 		} else if info.IsDir() {
-
 			return handleDirectory(templatePath, outputPath)
 		} else {
 			return handleFile(templatePath, outputPath, cfg)
@@ -61,7 +60,7 @@ func handleDirectory(templatePath, outputPath string) error {
 	log.WithFields(log.Fields{
 		"path": outputPath,
 	}).Debug("Creating directory")
-	return os.Mkdir(outputPath, 0777)
+	return os.MkdirAll(outputPath, 0777)
 }
 
 func handleFile(templatePath, outputPath string, cfg *Config) error {
