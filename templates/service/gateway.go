@@ -6,10 +6,10 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/wercker/auth/middleware"
 	"github.com/wercker/blueprint/templates/service/core"
+	"github.com/wercker/pkg/log"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

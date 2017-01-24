@@ -9,11 +9,11 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v1"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/pkg/errors"
 	"github.com/wercker/blueprint/templates/service/core"
 	"github.com/wercker/blueprint/templates/service/server"
 	"github.com/wercker/blueprint/templates/service/state"
+	"github.com/wercker/pkg/log"
 	"google.golang.org/grpc"
 )
 

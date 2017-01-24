@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/wercker/pkg/log"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
@@ -15,8 +16,13 @@ func main() {
 
 	app.Version = Version()
 	app.Compiled = CompiledAt()
-
-	app.Flags = []cli.Flag{}
+	app.Before = log.SetupLogging
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "debug",
+			Usage: "Enable debug logging",
+		},
+	}
 	app.Commands = []cli.Command{
 		//clientCommand,
 		gatewayCommand,
