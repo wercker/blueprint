@@ -19,7 +19,6 @@ white() {
   printf "${WHITE}$@${NC}"
 }
 
-
 green() {
   printf "${GREEN}$@${NC}"
 }
@@ -31,7 +30,6 @@ fail() {
 success() {
   green "✓\n"
 }
-
 
 # Check that we are not using some package
 check_not_using() {
@@ -78,20 +76,53 @@ check_has() {
 
 main() {
   (
-    cd "$1" || exit
+    cd "$1" || exit 1
     check_has_no glide.*
     check_not_using "github.com/Sirupsen/logrus"
     check_not_using "github.com/codegangsta/cli"
+    check_not_using 2016
     check_has "core/generate-protobuf.sh"
     check_has ".managed.json"
     check_has "version.go"
+    check_has "deployment/deployment.template.yml"
   )
 }
 
-CHECKDIR=$1
+# Initial values
+WATCH=0
+
+# Check some args
+while [ ! $# -eq 0 ]
+do
+  case "$1" in
+    --watch | -w)
+      shift
+      WATCH=$1
+      ;;
+    *)
+      CHECKDIR=$1
+      ;;
+  esac
+  shift
+done
+
 if [ -z "$CHECKDIR" ]; then
   CHECKDIR=.
 fi
 
-main "$CHECKDIR"
+if [ ! "$WATCH" -eq 0 ]; then
+  clear
+  while true
+  do
+    tput cup 0 0
+    COLS=$(tput cols)
+    printf "Every %ss: audit.sh %s\n" "$WATCH" "$CHECKDIR"
+    tput cup 0 $((COLS-28))
+    date
+    main "$CHECKDIR"
+    sleep "$WATCH"
+  done
+else
+  main "$CHECKDIR"
+fi
 
