@@ -56,6 +56,15 @@ replace_logrus() {
   goimports -w "$f"
 }
 
+replace_2016() {
+  found=$(grep --binary-files=without-match "2016" "$f")
+  if [ -z "$found" ]; then
+    # skip anything without logrus
+    return 0
+  fi
+  search_and_replace "$1" "2016" "2107"
+}
+
 update_managed_json() {
   white "Updating .managed.json...\n"
   # server port
@@ -79,7 +88,7 @@ EOF
 }
 
 rename_yaml() {
-  files=$(ls deployment/$name-*.yml)
+  files=$(ls deployment/$name-*.yml 2> /dev/null)
   if [ -z "$files" ]; then
     return 0
   fi
@@ -95,12 +104,23 @@ rename_yaml() {
   done
 }
 
+ensure_dep() {
+  white "Checking for dependency $1...\n"
+  found=$(govendor list +vendor | grep "$1")
+  if [ -z "$found" ]; then
+    echo "Did not find $1 in vendor.json, fetching"
+    govendor fetch "$1"
+    return 1
+  fi
+}
 main() {
   (
   cd "$1" || exit 1
   update_managed_json
   rename_yaml
   walk "replace_logrus"
+  ensure_dep "github.com/wercker/pkg/log"
+  walk "replace_2016"
   )
 }
 

@@ -74,6 +74,19 @@ check_has() {
   fi
 }
 
+check_has_deps() {
+  white "Checking for dependency $1... "
+  found=$(govendor list +vendor | grep "$1")
+  if [ -z "$found" ]; then
+    fail
+    echo "Did not find $1 in vendor.json"
+    return 1
+  else
+    success
+  fi
+}
+
+
 main() {
   (
     cd "$1" || exit 1
@@ -85,6 +98,7 @@ main() {
     check_has ".managed.json"
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
+    check_has_deps "github.com/wercker/pkg/log"
   )
 }
 
