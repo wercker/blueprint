@@ -2,6 +2,9 @@ box: golang:1.7
 build:
   base-path: /go/src/github.com/wercker/blueprint/templates/service
   steps:
+    - golint:
+        exclude: "^vendor|^core/blueprint\\.pb\\.go|^core/blueprint\\.pb\\.gw.go"
+
     - script:
         name: install govendor
         code: go get -u github.com/kardianos/govendor
@@ -9,9 +12,6 @@ build:
     - script:
         name: go vet
         code: govendor vet +local
-
-    - golint:
-        exclude: "^vendor|^core/blueprint\\.pb\\.go|^core/blueprint\\.pb\\.gw.go"
 
     - script:
         name: force "go get" over ssh
@@ -33,7 +33,7 @@ build:
 
     - script:
         name: go test
-        code: govendor test +local
+        code: CGO_ENABLED=0 govendor test +local
 
     - script:
         name: go build
@@ -76,7 +76,7 @@ push-quay:
         registry: https://quay.io
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
-        tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
+        tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT,$WERCKER_GIT_COMMIT
         entrypoint: /blueprint
         ports: 666,667
         user: 1234
@@ -91,7 +91,7 @@ deploy-kube:
         cwd: deployment
         code: |
           rm *.template.yml
-          cat *.yml > blueprint.yml
+          cat *.yml | tee blueprint.yml
           cp *.yml $WERCKER_REPORT_ARTIFACTS_DIR/
 
     - kubectl:

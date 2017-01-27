@@ -95,13 +95,14 @@ diff_wercker_yml() {
   gateway=$(jq -r .Gateway < .managed.json)
   echo "$BLUEPRINTDIR"
   echo "$name"
-  sed -e "s/blueprint/$name/g;s/\/templates\/service//g;s/666/$port/g;s/667/$gateway/g" $BLUEPRINTDIR/templates/service/wercker.yml > /tmp/audit.yml
+  sed -e "s/blueprint/$name/g;s/\/templates\/service//g;s/666/$port/g;s/667/$gateway/g" "$BLUEPRINTDIR/templates/service/wercker.yml" > /tmp/audit.yml
   git diff -u /tmp/audit.yml wercker.yml
 }
 
 main() {
   (
     cd "$1" || exit 1
+    diff_wercker_yml
     check_has_no glide.*
     check_not_using "github.com/Sirupsen/logrus"
     check_not_using "github.com/codegangsta/cli"
@@ -111,7 +112,6 @@ main() {
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
     check_has_deps "github.com/wercker/pkg/log"
-    diff_wercker_yml
   )
 }
 
