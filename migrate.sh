@@ -50,9 +50,11 @@ replace_logrus() {
     return 0
   fi
   echo "$found"
-  read -rp "Press enter to continue"
+  #read -rp "Press enter to continue"
 
   search_and_replace "$f" 'log \"github.com\/Sirupsen\/logrus\"' '\"github.com\/wercker\/pkg\/log\"'
+  search_and_replace "$f" '\"github.com\/Sirupsen\/logrus\"' '\"github.com\/wercker\/pkg\/log\"'
+  search_and_replace "$f" 'logrus' 'log'
   goimports -w "$f"
 }
 

@@ -76,7 +76,9 @@ check_has() {
 
 check_has_deps() {
   white "Checking for dependency $1... "
-  found=$(govendor list +vendor | grep "$1")
+  # NOTE(termie): govendor list is super slow
+  #found=$(govendor list +vendor | grep "$1")
+  found=$(grep "\"path\"" ./vendor/vendor.json | grep "$1")
   if [ -z "$found" ]; then
     fail
     echo "Did not find $1 in vendor.json"
@@ -86,6 +88,16 @@ check_has_deps() {
   fi
 }
 
+# Replacing blueprint with $name,
+diff_wercker_yml() {
+  name=$(jq -r .Name < .managed.json)
+  port=$(jq -r .Port < .managed.json)
+  gateway=$(jq -r .Gateway < .managed.json)
+  echo "$BLUEPRINTDIR"
+  echo "$name"
+  sed -e "s/blueprint/$name/g;s/\/templates\/service//g;s/666/$port/g;s/667/$gateway/g" $BLUEPRINTDIR/templates/service/wercker.yml > /tmp/audit.yml
+  git diff -u /tmp/audit.yml wercker.yml
+}
 
 main() {
   (
@@ -99,11 +111,13 @@ main() {
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
     check_has_deps "github.com/wercker/pkg/log"
+    diff_wercker_yml
   )
 }
 
 # Initial values
 WATCH=0
+BLUEPRINTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Check some args
 while [ ! $# -eq 0 ]
