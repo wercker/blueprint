@@ -69,7 +69,7 @@ replace_2016() {
 
 update_govendor_cgo() {
   white "Updating govendor step to use CGO_ENABLED...\n"
-  search_and_replace "$1" "code: govendor test" "code CGO_ENABLED=0 govendor test"
+  search_and_replace "$1" "code: govendor test" "code: CGO_ENABLED=0 govendor test"
 }
 
 update_docker_tags() {
