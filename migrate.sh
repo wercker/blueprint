@@ -124,13 +124,12 @@ EOF
 }
 
 rename_yaml() {
-  white "Renaming service-*.template.yaml to *.template.yaml...\n"
-  files=$(ls deployment/$name-*.yml 2> /dev/null)
+  name=$(jq -r .Name < .managed.json)
+  white "Renaming $name-*.template.yml to *.template.yml...\n"
+  files=$(ls deployment/$name-*.template.yml 2> /dev/null)
   if [ -z "$files" ]; then
     return 0
   fi
-  white "Renaming deployment/*.yml\n"
-  name=$(jq -r .Name < .managed.json)
   for x in $files;
   do
     new_name=$(echo $x | sed -e "s/$name-//")
