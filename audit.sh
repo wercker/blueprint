@@ -40,6 +40,7 @@ check_not_using() {
     --exclude-dir \.wercker \
     --exclude-dir \.git \
     --exclude audit.sh \
+    --exclude *.json \
     -R "$1" .)
   if [ -n "$found" ]; then
     fail
