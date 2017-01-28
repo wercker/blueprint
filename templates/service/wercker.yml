@@ -42,7 +42,8 @@ build:
             go build \
             -ldflags="-s -X main.GitCommit=$WERCKER_GIT_COMMIT -X main.PatchVersion=$(( ($(date +%s) - $(date --date=20150101 +%s) )/(60*60*24) )) -X main.Compiled=$(date +%s)" \
             -installsuffix cgo \
-            -o $WERCKER_OUTPUT_DIR/blueprint
+            -o "$WERCKER_OUTPUT_DIR/blueprint"
+          cp -r "$WERCKER_OUTPUT_DIR/blueprint" "$WERCKER_REPORT_ARTIFACTS_DIR"
 
     - script:
         name: forward deployment scripts

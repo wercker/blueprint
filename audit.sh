@@ -100,6 +100,20 @@ diff_wercker_yml() {
   git diff -u /tmp/audit.yml wercker.yml
 }
 
+# Check that we output the build artifact
+check_artifact_output() {
+  white "Checking artifact output... "
+  name=$(jq -r .Name < .managed.json)
+  found=$(grep --binary-files=without-match "cp -r \"\$WERCKER_OUTPUT_DIR/$name\" \"\$WERCKER_REPORT_ARTIFACTS_DIR\"" "$1")
+  if [ -z "$found" ]; then
+    fail
+    echo "Did not find artifact copy to output dir"
+    return 1
+  else
+    success
+  fi
+}
+
 main() {
   (
     cd "$1" || exit 1
@@ -113,6 +127,7 @@ main() {
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
     check_has_deps "github.com/wercker/pkg/log"
+    check_artifact_output wercker.yml
   )
 }
 

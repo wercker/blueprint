@@ -24,7 +24,7 @@ green() {
 
 walk() {
   white "Walking with $1...\n"
-  found=$(find . -type f | grep -v vendor | grep -v .wercker | grep -v .git)
+  found=$(find . -type f | grep -v vendor | grep -v .wercker | grep -v .git | grep -v .json)
   for x in $found
   do
     if [ "$DEBUG" ]; then
@@ -39,7 +39,6 @@ search_and_replace() {
   search=$2
   replace=$3
 
-  echo sed -i '' -e "\"s/$search/$replace/g\"" "\"$file\""
   sed -i '' -e "s/$search/$replace/g" "$file"
 }
 
@@ -64,7 +63,7 @@ replace_2016() {
     # skip anything without logrus
     return 0
   fi
-  search_and_replace "$1" "2016" "2107"
+  search_and_replace "$1" "(c) 2016" "(c) 2107"
 }
 
 update_govendor_cgo() {
