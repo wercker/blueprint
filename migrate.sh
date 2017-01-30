@@ -35,15 +35,15 @@ walk() {
 }
 
 search_and_replace() {
-  file=$1
-  search=$2
-  replace=$3
+  local file=$1
+  local search=$2
+  local replace=$3
 
   sed -i '' -e "s/$search/$replace/g" "$file"
 }
 
 replace_logrus() {
-  found=$(grep --binary-files=without-match "logrus" "$1")
+  local found=$(grep --binary-files=without-match "logrus" "$1")
   if [ -z "$found" ]; then
     # skip anything without logrus
     return 0
@@ -54,16 +54,32 @@ replace_logrus() {
   search_and_replace "$1" 'log \"github.com\/Sirupsen\/logrus\"' '\"github.com\/wercker\/pkg\/log\"'
   search_and_replace "$1" '\"github.com\/Sirupsen\/logrus\"' '\"github.com\/wercker\/pkg\/log\"'
   search_and_replace "$1" 'logrus' 'log'
+
   goimports -w "$1"
 }
 
-replace_2016() {
-  found=$(grep --binary-files=without-match "2016" "$1")
+replace_log() {
+  local found=$(grep --binary-files=without-match '"log"' "$1")
   if [ -z "$found" ]; then
     # skip anything without logrus
     return 0
   fi
-  search_and_replace "$1" "(c) 2016" "(c) 2107"
+  echo "$found"
+  #read -rp "Press enter to continue"
+
+  search_and_replace "$1" '	\"log\"' '\"github.com\/wercker\/pkg\/log\"'
+
+  goimports -w "$1"
+}
+
+replace_2016() {
+  local found=$(grep --binary-files=without-match "2016" "$1")
+  if [ -z "$found" ]; then
+    # skip anything without logrus
+    return 0
+  fi
+  search_and_replace "$1" "(c) 2016" "(c) 2017"
+  search_and_replace "$1" "(c) 2107" "(c) 2017"
 }
 
 update_govendor_cgo() {
@@ -73,7 +89,7 @@ update_govendor_cgo() {
 
 update_docker_tags() {
   white "Updating docker tags to include git commit...\n"
-  found=$(grep --binary-files=without-match "tag: \$WERCKER_GIT_BRANCH-\$WERCKER_GIT_COMMIT,\$WERCKER_GIT_COMMIT" "$1")
+  local found=$(grep --binary-files=without-match "tag: \$WERCKER_GIT_BRANCH-\$WERCKER_GIT_COMMIT,\$WERCKER_GIT_COMMIT" "$1")
   if [ -n "$found" ]; then
     # already there, skip it
     return 0
@@ -83,19 +99,20 @@ update_docker_tags() {
 
 update_tee_yml() {
   white "Updating deploy yaml to use tee...\n"
-  name=$(jq -r .Name < .managed.json)
+  local name=$(jq -r .Name < .managed.json)
   search_and_replace "$1" "cat \*\.yml > $name.yml" "cat *.yml | tee $name.yml"
 }
 
 update_artifact_output() {
   white "Updating artifact output\n"
-  name=$(jq -r .Name < .managed.json)
-  found=$(grep --binary-files=without-match "cp -r \"\$WERCKER_OUTPUT_DIR/$name\" \"\$WERCKER_REPORT_ARTIFACTS_DIR\"" "$1")
+  local name=$(jq -r .Name < .managed.json)
+  local found=$(grep --binary-files=without-match "cp -r \"\$WERCKER_OUTPUT_DIR/$name\" \"\$WERCKER_REPORT_ARTIFACTS_DIR\"" "$1")
   if [ -n "$found" ]; then
     # already there, skip it
     return 0
   fi
 
+  # NOTE(termie): have mercy
   search_and_replace "$1" "-o \\\$WERCKER_OUTPUT_DIR\/$name" "-o \\\"\\\$WERCKER_OUTPUT_DIR\/$name\\\""
   sed -i '' -e "/-o \"\$WERCKER_OUTPUT_DIR\/$name\"/a\\
 \ \ \ \ \ \ \ \ \ \ cp -r \"\$WERCKER_OUTPUT_DIR\/$name\" \"\$WERCKER_REPORT_ARTIFACTS_DIR\"" $1
@@ -104,18 +121,18 @@ update_artifact_output() {
 update_managed_json() {
   white "Updating .managed.json...\n"
   # server port
-  server_port=$(grep -A 1 '"port",' server.go | grep "Value:" | sed -e 's/.* \([0-9]\{4,6\}\),/\1/')
-  gateway_port=$(grep -A 1 '"port",' gateway.go | grep "Value:" | sed -e 's/.* \([0-9]\{4,6\}\),/\1/')
-  description=$(grep "app.Usage" main.go | sed -e 's/.*"\(.*\)"/\1/')
-  name=$(basename "$PWD")
-  year=2017
+  local server_port=$(grep -A 1 '"port",' server.go | grep "Value:" | sed -e 's/.* \([0-9]\{4,6\}\),/\1/')
+  local gateway_port=$(grep -A 1 '"port",' gateway.go | grep "Value:" | sed -e 's/.* \([0-9]\{4,6\}\),/\1/')
+  local description=$(grep "app.Usage" main.go | sed -e 's/.*"\(.*\)"/\1/')
+  local name=$(basename "$PWD")
+  local year=2017
 
   cat <<EOF > .managed.json
 {
   "Template": "service",
   "Name": "$name",
-  "Port": $server_port,
-  "Gateway": $gateway_port,
+  "Port": ${server_port:-666},
+  "Gateway": ${gateway_port:-667},
   "Year": "$year",
   "Description": "$description"
 }
@@ -124,15 +141,15 @@ EOF
 }
 
 rename_yaml() {
-  name=$(jq -r .Name < .managed.json)
+  local name=$(jq -r .Name < .managed.json)
   white "Renaming $name-*.template.yml to *.template.yml...\n"
-  files=$(ls deployment/$name-*.template.yml 2> /dev/null)
+  local files=$(ls deployment/$name-*.template.yml 2> /dev/null)
   if [ -z "$files" ]; then
     return 0
   fi
   for x in $files;
   do
-    new_name=$(echo $x | sed -e "s/$name-//")
+    local new_name=$(echo $x | sed -e "s/$name-//")
     if [ "$DEBUG" ]; then
       echo "$x -> $new_name"
     fi
@@ -144,7 +161,7 @@ ensure_dep() {
   white "Ensuring go dependency $1...\n"
   # NOTE(termie): govendor list is super slow
   #found=$(govendor list +vendor | grep "$1")
-  found=$(grep "\"path\"" ./vendor/vendor.json | grep "$1")
+  local found=$(grep "\"path\"" ./vendor/vendor.json | grep "$1")
   if [ -z "$found" ]; then
     echo "Did not find $1 in vendor.json, fetching"
     govendor fetch "$1"
@@ -158,6 +175,7 @@ main() {
   update_managed_json
   rename_yaml
   walk "replace_logrus"
+  walk "replace_log"
   ensure_dep "github.com/wercker/pkg/log"
   walk "replace_2016"
   update_govendor_cgo wercker.yml
