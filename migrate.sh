@@ -82,6 +82,11 @@ replace_2016() {
   search_and_replace "$1" "(c) 2107" "(c) 2017"
 }
 
+update_golang() {
+  white "Updating govendor step to use CGO_ENABLED...\n"
+  search_and_replace "$1" "golang:1.6" "golang:1.7"
+}
+
 update_govendor_cgo() {
   white "Updating govendor step to use CGO_ENABLED...\n"
   search_and_replace "$1" "code: govendor test" "code: CGO_ENABLED=0 govendor test"
@@ -178,6 +183,7 @@ main() {
   walk "replace_log"
   ensure_dep "github.com/wercker/pkg/log"
   walk "replace_2016"
+  update_golang wercker.yml
   update_govendor_cgo wercker.yml
   update_docker_tags wercker.yml
   update_tee_yml wercker.yml
