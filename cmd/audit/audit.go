@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"unicode/utf8"
 )
 
 const RED = "\033[0;31m"
@@ -130,6 +131,9 @@ func Grep(path string, re *regexp.Regexp) ([]Grepped, error) {
 	i := 0
 	for scanner.Scan() {
 		line := scanner.Text()
+		if i == 0 && !utf8.ValidString(line) {
+			return []Grepped{}, nil
+		}
 		if re.MatchString(line) {
 			out = append(out, Grepped{
 				Index: i,
@@ -211,7 +215,7 @@ func CheckNotUsing(path, s string, middleware ...Wakka) bool {
 }
 
 func CheckNotHas(path, s string) bool {
-	fmt.Printf(white("Checking not has  %s... ", s))
+	fmt.Printf(white("Checking not has %s... ", s))
 	b, _ := filepath.Glob(filepath.Join(path, s))
 	if len(b) != 0 {
 		failed()
@@ -237,6 +241,8 @@ func CheckHas(path, s string) bool {
 }
 
 // Custom
+
+// Make sure the wercker.yml is outputing the built artifacts for easy download
 func CheckArtifactOutput(path string, managed *ManagedJSON) bool {
 	fmt.Printf(white("Checking wercker.yml `go build` for artifact output... "))
 	restring := fmt.Sprintf(`cp -r "\$WERCKER_OUTPUT_DIR/%s" "\$WERCKER_REPORT_ARTIFACTS_DIR"`, managed.Name)
@@ -257,13 +263,30 @@ func CheckArtifactOutput(path string, managed *ManagedJSON) bool {
 	return true
 }
 
+// // CheckTemplateVars makes sure our template variables start with WERCKER or TPL
+// func CheckTemplateVars(path string) bool {
+
+// }
+
 func main() {
 	path := os.Args[1]
 
-	CheckNotHas(path, "vendor/vendor.json")
+	CheckNotHas(path, "glide.*")
 	CheckNotUsing(path, `"github\.com/Sirupsen/logrus"`)
 	CheckNotUsing(path, `"github.com/codegangsta/cli"`)
-	CheckNotUsing(path, `2016`, WakkaExclude(".*.json"))
+	CheckNotUsing(path, `\(c\) 2016`, WakkaExclude(".*.json"))
+
+	// Only allow ${WERCKER_ and ${TPL_ in templates
+	// Technically there are a few words that might satisfy this but...
+	CheckNotUsing(path, `\$\{[^TW][^PE][^LR]`, WakkaInclude(`.*\.template.*`))
+
+	// Flags flags flags flags flags env env var var var
+	CheckNotUsing(path, `KUBERNETES_MASTER`)
+	CheckNotUsing(path, `DOCKER_USER$`)
+	CheckNotUsing(path, `MONGODB`)
+	CheckNotUsing(path, `AUTH_TARGET|AuthTarget`)
+	CheckNotUsing(path, `\w-host`)
+
 	// CheckNotUsing(path, `"github\.com/wercker/pkg/log"`)
 
 	CheckHas(path, "core/generate-protobuf.sh")
