@@ -214,6 +214,24 @@ func CheckNotUsing(path, s string, middleware ...Wakka) bool {
 	return false
 }
 
+func CheckHasDeps(path, s string) bool {
+	fmt.Printf(white("Checking for dependency %s... ", s))
+	re := regexp.MustCompile(s)
+	g, err := Grep(filepath.Join(path, "vendor/vendor.json"), re)
+	if err != nil {
+		failed()
+		fmt.Printf("Error: %s\n", err.Error())
+		return false
+	}
+	if len(g) == 0 {
+		failed()
+		fmt.Printf("Did not find %s in vendor/vendor.json\n", s)
+		return false
+	}
+	succeeded()
+	return true
+}
+
 func CheckNotHas(path, s string) bool {
 	fmt.Printf(white("Checking not has %s... ", s))
 	b, _ := filepath.Glob(filepath.Join(path, s))
@@ -275,6 +293,8 @@ func main() {
 	CheckNotUsing(path, `"github\.com/Sirupsen/logrus"`)
 	CheckNotUsing(path, `"github.com/codegangsta/cli"`)
 	CheckNotUsing(path, `\(c\) 2016`, WakkaExclude(".*.json"))
+
+	CheckHasDeps(path, `github.com/wercker/pkg/log`)
 
 	// Only allow ${WERCKER_ and ${TPL_ in templates
 	// Technically there are a few words that might satisfy this but...
