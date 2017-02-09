@@ -67,4 +67,4 @@ build:
           govendor sync
           govendor generate +local
           go build
-
+          cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
