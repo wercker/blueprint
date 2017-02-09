@@ -24,7 +24,6 @@ func main() {
 		},
 	}
 	app.Commands = []cli.Command{
-		//clientCommand,
 		gatewayCommand,
 		serverCommand,
 	}

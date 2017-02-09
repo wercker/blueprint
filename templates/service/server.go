@@ -9,11 +9,14 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v1"
 
+	grpcmw "github.com/mwitkow/go-grpc-middleware"
 	"github.com/pkg/errors"
 	"github.com/wercker/blueprint/templates/service/core"
 	"github.com/wercker/blueprint/templates/service/server"
 	"github.com/wercker/blueprint/templates/service/state"
+	"github.com/wercker/pkg/conf"
 	"github.com/wercker/pkg/log"
+	"github.com/wercker/pkg/trace"
 	"google.golang.org/grpc"
 )
 
@@ -21,26 +24,28 @@ var serverCommand = cli.Command{
 	Name:   "server",
 	Usage:  "start gRPC server",
 	Action: serverAction,
-	Flags: []cli.Flag{
-		cli.IntFlag{
-			Name:   "port",
-			Value:  666,
-			EnvVar: "PORT",
-		},
-		cli.StringFlag{
-			Name:   "mongo",
-			Value:  "mongodb://localhost:27017",
-			EnvVar: "MONGODB_URI",
-		},
-		cli.StringFlag{
-			Name:  "mongo-database",
-			Value: "blueprint",
-		},
-		cli.StringFlag{
-			Name:  "state-store",
-			Usage: "storage driver, currently supported [mongo]",
-			Value: "mongo",
-		},
+	Flags:  append(serverFlags, conf.TraceFlags()...),
+}
+
+var serverFlags = []cli.Flag{
+	cli.IntFlag{
+		Name:   "port",
+		Value:  666,
+		EnvVar: "PORT",
+	},
+	cli.StringFlag{
+		Name:   "mongo",
+		Value:  "mongodb://localhost:27017",
+		EnvVar: "MONGODB_URI",
+	},
+	cli.StringFlag{
+		Name:  "mongo-database",
+		Value: "blueprint",
+	},
+	cli.StringFlag{
+		Name:  "state-store",
+		Usage: "storage driver, currently supported [mongo]",
+		Value: "mongo",
 	},
 }
 
@@ -54,12 +59,20 @@ var serverAction = func(c *cli.Context) error {
 		return errorExitCode
 	}
 
+	tracer, err := getTracer(o.TraceOptions, "blueprint", o.Port)
+	if err != nil {
+		log.WithError(err).Error("Unable to create a tracer")
+		return errorExitCode
+	}
+
 	store, err := getStore(o)
 	if err != nil {
 		log.WithError(err).Error("Unable to create state store")
 		return errorExitCode
 	}
 	defer store.Close()
+
+	store = state.NewTraceStore(store, tracer)
 
 	log.Debug("Creating server")
 	server, err := server.New(store)
@@ -68,7 +81,12 @@ var serverAction = func(c *cli.Context) error {
 		return errorExitCode
 	}
 
-	s := grpc.NewServer()
+	// The following interceptors will be called in order (ie. top to bottom)
+	interceptors := []grpc.UnaryServerInterceptor{
+		trace.Interceptor(tracer), // opentracing + expose trace ID
+	}
+
+	s := grpc.NewServer(grpcmw.WithUnaryServerChain(interceptors...))
 	core.RegisterBlueprintServer(s, server)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", o.Port))
@@ -102,6 +120,8 @@ var serverAction = func(c *cli.Context) error {
 }
 
 type serverOptions struct {
+	*conf.TraceOptions
+
 	MongoDatabase string
 	MongoURI      string
 	Port          int
@@ -109,12 +129,16 @@ type serverOptions struct {
 }
 
 func parseServerOptions(c *cli.Context) (*serverOptions, error) {
+	traceOptions := conf.ParseTraceOptions(c)
+
 	port := c.Int("port")
 	if !validPortNumber(port) {
 		return nil, fmt.Errorf("Invalid port number: %d", port)
 	}
 
 	return &serverOptions{
+		TraceOptions: traceOptions,
+
 		MongoDatabase: c.String("mongo-database"),
 		MongoURI:      c.String("mongo"),
 		Port:          port,
