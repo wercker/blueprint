@@ -83,8 +83,10 @@ replace_2016() {
 }
 
 update_golang() {
-  white "Updating govendor step to use CGO_ENABLED...\n"
-  search_and_replace "$1" "golang:1.6" "golang:1.7"
+  current=1.8
+  white "Updating golang to $current...\n"
+  search_and_replace "$1" "golang:1.6" "golang:$current"
+  search_and_replace "$1" "golang:1.7" "golang:$current"
 }
 
 update_govendor_cgo() {
