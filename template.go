@@ -11,7 +11,8 @@ var replacements [][]string = [][]string{
 	[]string{"Blueprint", "{{title .Name}}"},
 	[]string{"blueprint", "{{lower .Name}}"},
 	[]string{"666", "{{.Port}}"},
-	[]string{"667", "{{.Gateway}}"},
+	[]string{"667", "{{.GatewayPort}}"},
+	[]string{"668", "{{.HealthPort}}"},
 	[]string{"TiVo for VRML", "{{.Description}}"},
 	[]string{"1996", "{{.Year}}"},
 }

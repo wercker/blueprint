@@ -249,6 +249,12 @@
 			"revisionTime": "2017-02-09T14:38:13Z"
 		},
 		{
+			"checksumSHA1": "XGFY6Kap6NnptwVj3ikTbymOFk4=",
+			"path": "github.com/wercker/pkg/health",
+			"revision": "1c513159dad789f44de0438797848fc476757592",
+			"revisionTime": "2017-02-20T16:00:31Z"
+		},
+		{
 			"checksumSHA1": "2WIl2yvZT/4tjvzRmMB1XVGPAW0=",
 			"path": "github.com/wercker/pkg/log",
 			"revision": "f991afbdc49d32ff9aa28d6e9382db3cd1e300cd",
@@ -405,10 +411,10 @@
 			"revisionTime": "2016-08-01T21:38:24Z"
 		},
 		{
-			"checksumSHA1": "hi6sSeRj+oyvsd+VqeSW4x9ET4U=",
+			"checksumSHA1": "brhONOPp4CSdTZf5uEtcH+FpFUI=",
 			"path": "gopkg.in/urfave/cli.v1",
-			"revision": "1efa31f08b9333f1bd4882d61f9d668a70cd902e",
-			"revisionTime": "2016-06-28T05:30:56Z"
+			"revision": "0bdeddeeb0f650497d603c4ad7b20cfe685682f6",
+			"revisionTime": "2016-11-22T04:36:10Z"
 		}
 	],
 	"rootPath": "github.com/wercker/blueprint/templates/service"

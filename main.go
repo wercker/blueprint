@@ -68,15 +68,16 @@ func initAction(c *cli.Context) error {
 	template := c.Args()[0]
 	name := c.Args()[1]
 	port := randomInt(1024, 65535)
-	// port := strconv.Itoa(portInt)
-	gateway := port + 1
+	gatewayPort := port + 1
+	healthPort := port + 2
 	description := "I am too lazy to write a description for my project and am a bad person"
 
 	config := &Config{
 		Template:    template,
 		Name:        name,
 		Port:        port,
-		Gateway:     gateway,
+		GatewayPort: gatewayPort,
+		HealthPort:  healthPort,
 		Description: description,
 		Year:        time.Now().Format("2006"),
 	}
@@ -234,14 +235,16 @@ func getVars(c *cli.Context, outputPath string) map[string]string {
 	}
 
 	portInt, _ := strconv.Atoi(port)
-	gateway := strconv.Itoa(portInt + 1)
+	gatewayPort := strconv.Itoa(portInt + 1)
+	healthPort := strconv.Itoa(portInt + 2)
 	ask := !c.GlobalBool("y")
 
 	result := map[string]string{
 		"Name":        name,
 		"Port":        port,
 		"Description": description,
-		"Gateway":     gateway,
+		"GatewayPort": gatewayPort,
+		"HealthPort":  healthPort,
 		"Year":        time.Now().Format("2006"),
 	}
 
@@ -271,9 +274,6 @@ func getVars(c *cli.Context, outputPath string) map[string]string {
 
 				scanner.Scan()
 				val = scanner.Text()
-
-				//var val string
-				//fmt.Fscanln(os.Stdin, &val)
 			}
 
 			if val == "" {

@@ -23,6 +23,7 @@ spec:
       nodeSelector:
         caste: patrician
       containers:
+
       - name: server
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [
@@ -38,6 +39,14 @@ spec:
               secretKeyRef:
                 name: mongo
                 key: connectionstring
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 668
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 668
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
@@ -48,6 +57,7 @@ spec:
           limits:
             cpu: 500m
             memory: 500Mi
+
       - name: gateway
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [

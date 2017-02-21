@@ -24,6 +24,10 @@ func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	}
 }
 
+func (s *TraceStore) Healthy() error {
+	return s.store.Healthy()
+}
+
 func (s *TraceStore) Close() error {
 	return s.store.Close()
 }

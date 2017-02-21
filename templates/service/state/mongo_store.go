@@ -33,8 +33,6 @@ type MongoStore struct {
 	//users          *mgo.Collection
 }
 
-var _ Store = (*MongoStore)(nil)
-
 // Healthy return nil if nothing is wrong. If it is unable to Ping Mongo it
 // will try to refresh the session and will return the err.
 func (s *MongoStore) Healthy() error {
@@ -75,3 +73,5 @@ func ParseObjectID(id string) (bson.ObjectId, error) {
 
 	return o, ErrInvalidObjectID
 }
+
+var _ Store = (*MongoStore)(nil)

@@ -2,7 +2,8 @@
   "Template": "service",
   "Name": "blueprint",
   "Port": 666,
-  "Gateway": 667,
+  "GatewayPort": 667,
+  "HealthPort": 668,
   "Year": "1996",
   "Description": "Tivo for VRML"
 }
