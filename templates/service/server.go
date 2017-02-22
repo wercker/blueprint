@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v1"
@@ -100,7 +101,7 @@ var serverAction = func(c *cli.Context) error {
 	// Shutdown on SIGINT, SIGTERM
 	go func() {
 		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Kill, os.Interrupt)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errc <- fmt.Errorf("%s", <-c)
 	}()
 
