@@ -57,7 +57,7 @@ var gatewayAction = func(c *cli.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	mux := runtime.NewServeMux() // grpc-gateway
+	mux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{EmitDefaults: true})) // grpc-gateway
 
 	// The following handlers will be called in reversed order (ie. bottom to top)
 	var handler http.Handler
