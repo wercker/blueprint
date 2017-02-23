@@ -1,5 +1,5 @@
 build:
-  box: golang:1.7
+  box: golang:1.8
   base-path: /go/src/github.com/wercker/blueprint
   steps:
     - install-packages:

@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/pkg/errors"
 	"github.com/wercker/auth/middleware"
 	"github.com/wercker/blueprint/templates/service/core"
 	"github.com/wercker/pkg/conf"
@@ -75,9 +79,34 @@ var gatewayAction = func(c *cli.Context) error {
 		return errorExitCode
 	}
 
-	log.Printf("Listening on port %d", o.Port)
-	http.ListenAndServe(fmt.Sprintf(":%d", o.Port), handler)
+	errc := make(chan error, 2)
 
+	// Shutdown on SIGINT, SIGTERM
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errc <- fmt.Errorf("%s", <-c)
+	}()
+
+	s := &http.Server{
+		Addr:    fmt.Sprintf(":%d", o.Port),
+		Handler: handler,
+	}
+	// Start Gateway server in separate goroutine
+	go func() {
+		log.WithField("port", o.Port).Info("Starting server")
+		err := s.ListenAndServe()
+		errc <- errors.Wrap(err, "gateway returned an error")
+	}()
+
+	err = <-errc
+	log.WithError(err).Info("Shutting down")
+
+	// Gracefully shutdown the Gateway server
+	err = s.Shutdown(ctx)
+	if err != nil {
+		log.WithError(err).Error("An error happened while shutting down")
+	}
 	return nil
 }
 
