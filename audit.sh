@@ -122,10 +122,12 @@ main() {
     check_not_using "github.com/Sirupsen/logrus"
     check_not_using "github.com/codegangsta/cli"
     check_not_using 2016
+    check_not_using "Applying context hack to gateway"
     check_has "core/generate-protobuf.sh"
     check_has ".managed.json"
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
+    check_has "request_context=true"
     check_has_deps "github.com/wercker/pkg/log"
     check_artifact_output wercker.yml
   )

@@ -81,28 +81,28 @@
 			"revisionTime": "2017-01-19T01:47:23Z"
 		},
 		{
-			"checksumSHA1": "0uWDQrsSzyQHYg5et19xtS+EWmY=",
+			"checksumSHA1": "3hr8gcSdrSWET1Q4kW1mt6oaee4=",
 			"path": "github.com/grpc-ecosystem/grpc-gateway/runtime",
-			"revision": "ccd4e6b091a44f9f6b32848ffc63b3e8f8e26092",
-			"revisionTime": "2016-08-08T06:56:29Z"
+			"revision": "b855144721c1eeda1c8c78215662d14da4cf1700",
+			"revisionTime": "2017-02-19T00:06:14Z"
 		},
 		{
-			"checksumSHA1": "GN9lH15GbtcX7xx70TjRYXi23Uk=",
+			"checksumSHA1": "x396LPNfci/5x8aVJbliQHH11HQ=",
 			"path": "github.com/grpc-ecosystem/grpc-gateway/runtime/internal",
-			"revision": "ccd4e6b091a44f9f6b32848ffc63b3e8f8e26092",
-			"revisionTime": "2016-08-08T06:56:29Z"
+			"revision": "b855144721c1eeda1c8c78215662d14da4cf1700",
+			"revisionTime": "2017-02-19T00:06:14Z"
 		},
 		{
-			"checksumSHA1": "D+k9iBM97p4RvkjpogAJevV8hmw=",
+			"checksumSHA1": "NCyVGekDqPMTHHK4ZbEDPZeiN2s=",
 			"path": "github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/google/api",
-			"revision": "ccd4e6b091a44f9f6b32848ffc63b3e8f8e26092",
-			"revisionTime": "2016-08-08T06:56:29Z"
+			"revision": "b855144721c1eeda1c8c78215662d14da4cf1700",
+			"revisionTime": "2017-02-19T00:06:14Z"
 		},
 		{
 			"checksumSHA1": "vqiK5r5dntV7JNZ+ZsGlD0Samos=",
 			"path": "github.com/grpc-ecosystem/grpc-gateway/utilities",
-			"revision": "ccd4e6b091a44f9f6b32848ffc63b3e8f8e26092",
-			"revisionTime": "2016-08-08T06:56:29Z"
+			"revision": "b855144721c1eeda1c8c78215662d14da4cf1700",
+			"revisionTime": "2017-02-19T00:06:14Z"
 		},
 		{
 			"checksumSHA1": "wFgIdUDU/DbkgYBM2Bdq5vXUSR0=",
