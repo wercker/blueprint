@@ -249,10 +249,10 @@
 			"revisionTime": "2017-02-09T14:38:13Z"
 		},
 		{
-			"checksumSHA1": "XGFY6Kap6NnptwVj3ikTbymOFk4=",
+			"checksumSHA1": "zfPz8ArGtLg5GR7onqOvtlD1N4Q=",
 			"path": "github.com/wercker/pkg/health",
-			"revision": "1c513159dad789f44de0438797848fc476757592",
-			"revisionTime": "2017-02-20T16:00:31Z"
+			"revision": "19636e0ccd089b04cb20c85d897d500d263c8145",
+			"revisionTime": "2017-02-23T13:37:26Z"
 		},
 		{
 			"checksumSHA1": "2WIl2yvZT/4tjvzRmMB1XVGPAW0=",

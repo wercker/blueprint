@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
@@ -131,9 +132,10 @@ var serverAction = func(c *cli.Context) error {
 	err = <-errc
 	log.WithError(err).Info("Shutting down")
 
-	// TODO(bvdberg): graceful shutdown of health service
+	// Gracefully shutdown the health server
+	healthService.Shutdown(context.Background())
 
-	// Graceful shutdown the gRPC server
+	// Gracefully shutdown the gRPC server
 	s.GracefulStop()
 
 	return nil
