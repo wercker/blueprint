@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"gopkg.in/urfave/cli.v1"
 
@@ -103,6 +104,8 @@ var gatewayAction = func(c *cli.Context) error {
 	log.WithError(err).Info("Shutting down")
 
 	// Gracefully shutdown the Gateway server
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
 	err = s.Shutdown(ctx)
 	if err != nil {
 		log.WithError(err).Error("An error happened while shutting down")
