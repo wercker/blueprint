@@ -123,6 +123,7 @@ main() {
     check_not_using "github.com/codegangsta/cli"
     check_not_using 2016
     check_not_using "Applying context hack to gateway"
+    check_not_using "func ParseObjectID(id string) (bson.ObjectId, error) {"
     check_has "core/generate-protobuf.sh"
     check_has ".managed.json"
     check_has "version.go"
