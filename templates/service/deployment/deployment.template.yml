@@ -3,6 +3,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: blueprint
+  annotations:
+    kubernetes.io/change-cause: Upgrade to ${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT} by ${WERCKER_STARTED_BY}
   labels:
     branch: ${WERCKER_GIT_BRANCH}
     commit: ${WERCKER_GIT_COMMIT}

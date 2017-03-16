@@ -101,4 +101,4 @@ deploy-kube:
         server: $KUBERNETES_MASTER
         token: $KUBERNETES_TOKEN
         insecure-skip-tls-verify: true
-        command: apply -f blueprint.yml
+        command: apply -f blueprint.yml --record=false # see https://github.com/kubernetes/kubernetes/issues/25554#issuecomment-269879971
