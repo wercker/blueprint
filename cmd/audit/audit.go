@@ -214,6 +214,32 @@ func CheckNotUsing(path, s string, middleware ...Wakka) bool {
 	return false
 }
 
+func CheckUsing(path, s string, middleware ...Wakka) bool {
+	fmt.Printf(white("Checking using %s... ", s))
+	grepped := []Grepped{}
+	walker := WakkaGrep(regexp.MustCompile(s), &grepped)
+
+	for _, wrapper := range middleware {
+		walker = wrapper.Wrap(walker)
+	}
+
+	defaultFilter := WakkaExclude(`vendor|\.wercker|\.git`)
+	walker = defaultFilter.Wrap(walker)
+
+	err := filepath.Walk(path, walker.Call)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	if len(grepped) != 0 {
+		succeeded()
+		return true
+	}
+	failed()
+	PrintGrep(grepped)
+	return false
+}
+
 func CheckHasDeps(path, s string) bool {
 	fmt.Printf(white("Checking for dependency %s... ", s))
 	re := regexp.MustCompile(s)
@@ -313,6 +339,8 @@ func main() {
 	CheckHas(path, ".managed.json")
 	CheckHas(path, "version.go")
 	CheckHas(path, "deployment/deployment.template.yml")
+
+	CheckUsing(path, "kubernetes.io/change-cause")
 
 	managed, err := LoadManagedJSON(path, ".managed.json")
 	if err != nil {
