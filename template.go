@@ -13,6 +13,7 @@ var replacements [][]string = [][]string{
 	[]string{"666", "{{.Port}}"},
 	[]string{"667", "{{.GatewayPort}}"},
 	[]string{"668", "{{.HealthPort}}"},
+	[]string{"668", "{{.MetricsPort}}"},
 	[]string{"TiVo for VRML", "{{.Description}}"},
 	[]string{"1996", "{{.Year}}"},
 }

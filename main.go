@@ -70,6 +70,7 @@ func initAction(c *cli.Context) error {
 	port := randomInt(1024, 65535)
 	gatewayPort := port + 1
 	healthPort := port + 2
+	metricsPort := port + 3
 	description := "I am too lazy to write a description for my project and am a bad person"
 
 	config := &Config{
@@ -78,6 +79,7 @@ func initAction(c *cli.Context) error {
 		Port:        port,
 		GatewayPort: gatewayPort,
 		HealthPort:  healthPort,
+		MetricsPort: metricsPort,
 		Description: description,
 		Year:        time.Now().Format("2006"),
 	}
@@ -237,6 +239,7 @@ func getVars(c *cli.Context, outputPath string) map[string]string {
 	portInt, _ := strconv.Atoi(port)
 	gatewayPort := strconv.Itoa(portInt + 1)
 	healthPort := strconv.Itoa(portInt + 2)
+	metricsPort := strconv.Itoa(portInt + 3)
 	ask := !c.GlobalBool("y")
 
 	result := map[string]string{
@@ -245,6 +248,7 @@ func getVars(c *cli.Context, outputPath string) map[string]string {
 		"Description": description,
 		"GatewayPort": gatewayPort,
 		"HealthPort":  healthPort,
+		"MetricsPort": metricsPort,
 		"Year":        time.Now().Format("2006"),
 	}
 

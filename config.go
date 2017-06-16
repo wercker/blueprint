@@ -6,6 +6,7 @@ type Config struct {
 	Port        int
 	GatewayPort int
 	HealthPort  int
+	MetricsPort int
 	Description string
 	Year        string
 }
