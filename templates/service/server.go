@@ -4,15 +4,15 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/urfave/cli.v1"
-
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	grpcmw "github.com/mwitkow/go-grpc-middleware"
 	"github.com/pkg/errors"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/wercker/blueprint/templates/service/core"
 	"github.com/wercker/blueprint/templates/service/server"
 	"github.com/wercker/blueprint/templates/service/state"
@@ -21,6 +21,8 @@ import (
 	"github.com/wercker/pkg/log"
 	"github.com/wercker/pkg/trace"
 	"google.golang.org/grpc"
+	mgo "gopkg.in/mgo.v2"
+	cli "gopkg.in/urfave/cli.v1"
 )
 
 var serverCommand = cli.Command{
@@ -40,6 +42,11 @@ var serverFlags = []cli.Flag{
 		Name:   "health-port",
 		Value:  668,
 		EnvVar: "HEALTH_PORT",
+	},
+	cli.IntFlag{
+		Name:   "metrics-port",
+		Value:  669,
+		EnvVar: "METRICS_PORT",
 	},
 	cli.StringFlag{
 		Name:   "mongo",
@@ -94,11 +101,14 @@ var serverAction = func(c *cli.Context) error {
 
 	// The following interceptors will be called in order (ie. top to bottom)
 	interceptors := []grpc.UnaryServerInterceptor{
-		trace.Interceptor(tracer), // opentracing + expose trace ID
+		trace.Interceptor(tracer),              // opentracing + expose trace ID
+		grpc_prometheus.UnaryServerInterceptor, // prometheus
 	}
 
 	s := grpc.NewServer(grpcmw.WithUnaryServerChain(interceptors...))
 	core.RegisterBlueprintServer(s, server)
+	grpc_prometheus.EnableHandlingTimeHistogram()
+	grpc_prometheus.Register(s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", o.Port))
 	if err != nil {
@@ -106,7 +116,7 @@ var serverAction = func(c *cli.Context) error {
 		return errorExitCode
 	}
 
-	errc := make(chan error, 2)
+	errc := make(chan error, 4)
 
 	// Shutdown on SIGINT, SIGTERM
 	go func() {
@@ -129,6 +139,13 @@ var serverAction = func(c *cli.Context) error {
 		errc <- errors.Wrap(err, "health service returned an error")
 	}()
 
+	// Start metrics server
+	go func() {
+		log.WithField("port", o.HealthPort).Info("Starting metrics server")
+		http.Handle("/metrics", prometheus.Handler())
+		errc <- http.ListenAndServe(fmt.Sprintf(":%d", o.MetricsPort), nil)
+	}()
+
 	err = <-errc
 	log.WithError(err).Info("Shutting down")
 
@@ -148,6 +165,7 @@ type serverOptions struct {
 	MongoURI      string
 	Port          int
 	HealthPort    int
+	MetricsPort   int
 	StateStore    string
 }
 
@@ -160,12 +178,25 @@ func parseServerOptions(c *cli.Context) (*serverOptions, error) {
 	}
 
 	healthPort := c.Int("health-port")
-	if !validPortNumber(port) {
-		return nil, fmt.Errorf("invalid health port number: %d", port)
+	if !validPortNumber(healthPort) {
+		return nil, fmt.Errorf("invalid health-port number: %d", healthPort)
 	}
 
-	if port == healthPort {
-		return nil, errors.New("port and health-port cannot be the same")
+	if healthPort == port {
+		return nil, errors.New("health-port and port cannot be the same")
+	}
+
+	metricsPort := c.Int("metrics-port")
+	if !validPortNumber(metricsPort) {
+		return nil, fmt.Errorf("invalid metrics port number: %d", metricsPort)
+	}
+
+	if metricsPort == port {
+		return nil, errors.New("metrics-port and port cannot be the same")
+	}
+
+	if metricsPort == healthPort {
+		return nil, errors.New("metrics-port and health-port cannot be the same")
 	}
 
 	return &serverOptions{
@@ -175,6 +206,7 @@ func parseServerOptions(c *cli.Context) (*serverOptions, error) {
 		MongoURI:      c.String("mongo"),
 		Port:          port,
 		HealthPort:    healthPort,
+		MetricsPort:   metricsPort,
 		StateStore:    c.String("state-store"),
 	}, nil
 }

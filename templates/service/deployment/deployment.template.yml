@@ -15,6 +15,9 @@ spec:
       app: blueprint
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9102'
       labels:
         app: blueprint
         branch: ${WERCKER_GIT_BRANCH}
@@ -30,10 +33,14 @@ spec:
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [
           "server",
+          "--metrics-port=9102",
         ]
         ports:
         - name: server
           containerPort: 666
+          protocol: TCP
+        - name: metrics
+          containerPort: 9102
           protocol: TCP
         env:
           - name: MONGODB_URI
