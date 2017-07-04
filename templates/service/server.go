@@ -141,7 +141,7 @@ var serverAction = func(c *cli.Context) error {
 
 	// Start metrics server
 	go func() {
-		log.WithField("port", o.HealthPort).Info("Starting metrics server")
+		log.WithField("port", o.MetricsPort).Info("Starting metrics server")
 		http.Handle("/metrics", prometheus.Handler())
 		errc <- http.ListenAndServe(fmt.Sprintf(":%d", o.MetricsPort), nil)
 	}()
