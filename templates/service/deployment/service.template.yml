@@ -2,6 +2,9 @@
 kind: Service
 apiVersion: v1
 metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9102"
   name: blueprint
 spec:
   ports:
@@ -13,5 +16,7 @@ spec:
       port: 8080
       targetPort: 667
       protocol: TCP
+    - name: http-metrics
+      port: 9102
   selector:
     app: blueprint

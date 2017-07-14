@@ -15,9 +15,6 @@ spec:
       app: blueprint
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '9102'
       labels:
         app: blueprint
         branch: ${WERCKER_GIT_BRANCH}
