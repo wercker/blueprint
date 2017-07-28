@@ -9,10 +9,10 @@
 			"revisionTime": "2017-02-09T11:12:13Z"
 		},
 		{
-			"checksumSHA1": "yXrS4e4yxaRBu/MX+39X3cS4kbg=",
+			"checksumSHA1": "BCmjskha6fhGDUxvgayGZnF8RUc=",
 			"path": "github.com/Sirupsen/logrus",
-			"revision": "a283a10442df8dc09befd873fab202bf8a253d6a",
-			"revisionTime": "2016-07-16T02:56:31Z"
+			"revision": "181d419aa9e2223811b824e8f0b4af96f9ba9302",
+			"revisionTime": "2017-07-28T07:42:14Z"
 		},
 		{
 			"checksumSHA1": "g+1RRk1Ar1T0GhrymGM/YDGU76U=",
@@ -311,26 +311,44 @@
 		{
 			"checksumSHA1": "DsON1WSrqQ2kYRGQCJXx364d2o0=",
 			"path": "github.com/wercker/pkg/conf",
-			"revision": "f991afbdc49d32ff9aa28d6e9382db3cd1e300cd",
-			"revisionTime": "2017-02-09T14:38:13Z"
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
 		},
 		{
 			"checksumSHA1": "zfPz8ArGtLg5GR7onqOvtlD1N4Q=",
 			"path": "github.com/wercker/pkg/health",
-			"revision": "19636e0ccd089b04cb20c85d897d500d263c8145",
-			"revisionTime": "2017-02-23T13:37:26Z"
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
 		},
 		{
-			"checksumSHA1": "2WIl2yvZT/4tjvzRmMB1XVGPAW0=",
+			"checksumSHA1": "VHE6X19IOrCyzUFyZJlQNUO5Cn8=",
 			"path": "github.com/wercker/pkg/log",
-			"revision": "f991afbdc49d32ff9aa28d6e9382db3cd1e300cd",
-			"revisionTime": "2017-02-09T14:38:13Z"
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
 		},
 		{
-			"checksumSHA1": "cC75NHsFlfxFuWXny4RwyEkFMWQ=",
+			"checksumSHA1": "gGu5gzJD+NCCwyBmhlfR2t10Y+s=",
+			"path": "github.com/wercker/pkg/metrics",
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
+		},
+		{
+			"checksumSHA1": "rFbTze+LHrB2V4iGwYEHcTrrJ6g=",
+			"path": "github.com/wercker/pkg/reflectutil",
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
+		},
+		{
+			"checksumSHA1": "dZAV63ZK1M8rchVI9uV9qCFxQSM=",
 			"path": "github.com/wercker/pkg/trace",
-			"revision": "f991afbdc49d32ff9aa28d6e9382db3cd1e300cd",
-			"revisionTime": "2017-02-09T14:38:13Z"
+			"revision": "97009bc919b1f1bbc8296498ba4130676cda0363",
+			"revisionTime": "2017-07-28T12:00:28Z"
+		},
+		{
+			"checksumSHA1": "ZaU56svwLgiJD0y8JOB3+/mpYBA=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "27b9897dfcda296fc086003b6e46fca80a29512d",
+			"revisionTime": "2017-07-28T03:03:01Z"
 		},
 		{
 			"checksumSHA1": "9jjO5GjLa0XF/nfWihF02RoH4qc=",

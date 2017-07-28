@@ -91,6 +91,7 @@ var serverAction = func(c *cli.Context) error {
 	healthService.RegisterProbe("store", store)
 
 	store = state.NewTraceStore(store, tracer)
+	store = state.NewMetricsStore(store)
 
 	log.Debug("Creating server")
 	server, err := server.New(store)

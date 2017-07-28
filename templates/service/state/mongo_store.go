@@ -1,8 +1,6 @@
 package state
 
 import (
-	"io"
-
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2"
 )
@@ -16,31 +14,35 @@ var (
 // NewMongoStore creates a new MongoStore. Use an empty string for databaseName
 // to use the database name that was provided in the connection string.
 func NewMongoStore(session *mgo.Session, databaseName string) (*MongoStore, error) {
-	//db := session.DB(databaseName)
-
 	return &MongoStore{
 		session: session,
-		//users: db.C("users"),
+		db:      databaseName,
 	}, nil
 }
 
 // MongoStore is an implementation of Store using Mongo as the database.
 type MongoStore struct {
 	session *mgo.Session
+	db      string
+}
 
-	// Relavant collections objects using the same names as the collections.
-	//users          *mgo.Collection
+var _ Store = (*MongoStore)(nil)
+
+// TODO: Add methods here
+
+// C get a Collection from sess by using the database defined on the store.
+func (s *MongoStore) C(sess *mgo.Session, collectionName string) *mgo.Collection {
+	return sess.DB(s.db).C(collectionName)
 }
 
 // Healthy return nil if nothing is wrong. If it is unable to Ping Mongo it
 // will try to refresh the session and will return the err.
 func (s *MongoStore) Healthy() error {
-	err := s.session.Ping()
-	if err != nil {
-		if err == io.EOF {
-			s.session.Refresh()
-		}
+	sess := s.session.Clone()
+	defer sess.Close()
 
+	err := sess.Ping()
+	if err != nil {
 		return err
 	}
 
@@ -52,5 +54,3 @@ func (s *MongoStore) Close() error {
 	s.session.Close()
 	return nil
 }
-
-var _ Store = (*MongoStore)(nil)

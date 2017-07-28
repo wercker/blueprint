@@ -9,12 +9,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-type TraceStore struct {
-	store     Store
-	tracer    opentracing.Tracer
-	component string
-}
-
 func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	component := strings.TrimPrefix(fmt.Sprintf("%T", store), "*")
 	return &TraceStore{
@@ -24,13 +18,15 @@ func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	}
 }
 
-func (s *TraceStore) Healthy() error {
-	return s.store.Healthy()
+type TraceStore struct {
+	store     Store
+	tracer    opentracing.Tracer
+	component string
 }
 
-func (s *TraceStore) Close() error {
-	return s.store.Close()
-}
+var _ Store = (*TraceStore)(nil)
+
+// TODO: add methods here
 
 func (s *TraceStore) trace(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (context.Context, opentracing.Span) {
 	var span opentracing.Span
@@ -46,4 +42,10 @@ func (s *TraceStore) trace(ctx context.Context, operationName string, opts ...op
 	return opentracing.ContextWithSpan(ctx, span), span
 }
 
-var _ Store = (*TraceStore)(nil)
+func (s *TraceStore) Healthy() error {
+	return s.store.Healthy()
+}
+
+func (s *TraceStore) Close() error {
+	return s.store.Close()
+}
