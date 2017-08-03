@@ -68,3 +68,57 @@ build:
           govendor generate +local
           go build
           cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
+
+proto-box:
+  box: golang:1.8
+  base-path: /go/src/github.com/wercker/blueprint
+  steps:
+    - install-packages:
+        packages: curl unzip
+
+    - script:
+        name: force "go get" over ssh
+        code: git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+    - add-ssh-key:
+        keyname: WALTERBOT
+
+    - add-to-known_hosts:
+        hostname: github.com
+        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+        type: rsa
+
+    - script:
+        name: install protobuf 3
+        code: |
+          export PROTOBUF_VERSION=3.3.0
+          curl -L https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip > /tmp/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
+          cd /tmp
+          unzip protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
+          mv -v include/* /usr/local/include/
+          mv -v bin/* /usr/local/bin
+
+    - script:
+        name: install protobuf plugins
+        code: |
+          go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+          go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+          go get -u github.com/golang/protobuf/protoc-gen-go
+          go get -u github.com/wercker/protoc-gen-flow
+
+    - script:
+        name: prune
+        code: rm -rf /pipeline /tmp/*
+
+    - internal/docker-push:
+        repository: quay.io/wercker/protoc
+        registry: https://quay.io
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        entrypoint: >
+          protoc
+            -I.
+            -I/usr/local/include
+            -I/go/src
+            -I./vendor
+            -I./vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis

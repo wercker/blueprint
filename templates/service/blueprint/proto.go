@@ -1,3 +1,3 @@
-package core
+package blueprint
 
 //go:generate ./generate-protobuf.sh
