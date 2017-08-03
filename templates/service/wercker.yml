@@ -3,7 +3,7 @@ build:
   base-path: /go/src/github.com/wercker/blueprint/templates/service
   steps:
     - golint:
-        exclude: "^vendor|^core/blueprint\\.pb\\.go|^core/blueprint\\.pb\\.gw.go"
+        exclude: "^vendor|^blue_print/blue_print\\.pb\\.go|^blue_print/blue_print\\.pb\\.gw.go"
 
     - script:
         name: install govendor

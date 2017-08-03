@@ -10,6 +10,7 @@ var replacements [][]string = [][]string{
 	[]string{"blueprint/templates/service", "{{lower .Name}}"},
 	[]string{"Blueprint", "{{title .Name}}"},
 	[]string{"blueprint", "{{lower .Name}}"},
+	[]string{"blue_print", "{{packaging .Name}}"},
 	[]string{"6666", "{{.Port}}"},
 	[]string{"6667", "{{.GatewayPort}}"},
 	[]string{"6668", "{{.HealthPort}}"},
@@ -51,11 +52,16 @@ func studly(s string) string {
 	return strings.Join(newParts, "")
 }
 
+func packaging(s string) string {
+	return strings.Replace(s, "-", "", -1)
+}
+
 var Funcs template.FuncMap = template.FuncMap{
 	// "package": func(input string) string { return strings.ToLower(input) },
 	// "method":  func(input string) string { return strings.Title(input) },
 	// "class":   func(input string) string { return strings.Title(input) },
 	// "file":    func(input string) string { return strings.ToLower(input) },
-	"title": studly,
-	"lower": func(input string) string { return strings.ToLower(input) },
+	"title":     studly,
+	"packaging": packaging,
+	"lower":     func(input string) string { return strings.ToLower(input) },
 }

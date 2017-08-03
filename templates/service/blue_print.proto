@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package blueprint;
+package blue_print;
 
 import "google/api/annotations.proto";
 
