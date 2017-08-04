@@ -32,12 +32,12 @@ var gatewayCommand = cli.Command{
 var gatewayFlags = []cli.Flag{
 	cli.IntFlag{
 		Name:   "port",
-		Value:  667,
+		Value:  6667,
 		EnvVar: "HTTP_PORT",
 	},
 	cli.StringFlag{
 		Name:   "host",
-		Value:  "localhost:666",
+		Value:  "localhost:6666",
 		EnvVar: "GRPC_HOST",
 	},
 }

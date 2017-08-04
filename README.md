@@ -104,8 +104,8 @@ before doing the templating:
   blueprint/templates/service -> {{package .Name}}
   Blueprint -> {{title .Name}}
   blueprint -> {{lower .Name}}
-  666 -> {{.Port}}
-  667 -> {{.Gateway}}
+  6666 -> {{.Port}}
+  6667 -> {{.Gateway}}
   1996 -> {{.Year}}
   Tivo for VRML -> {{.Description}}
 ```

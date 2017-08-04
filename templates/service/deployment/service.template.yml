@@ -10,11 +10,11 @@ spec:
   ports:
     - name: server
       port: 80
-      targetPort: 666
+      targetPort: 6666
       protocol: TCP
     - name: gateway
       port: 8080
-      targetPort: 667
+      targetPort: 6667
       protocol: TCP
     - name: http-metrics
       port: 9102

@@ -138,8 +138,8 @@ update_managed_json() {
 {
   "Template": "service",
   "Name": "$name",
-  "Port": ${server_port:-666},
-  "Gateway": ${gateway_port:-667},
+  "Port": ${server_port:-6666},
+  "Gateway": ${gateway_port:-6667},
   "Year": "$year",
   "Description": "$description"
 }

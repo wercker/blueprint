@@ -96,7 +96,7 @@ diff_wercker_yml() {
   gateway=$(jq -r .Gateway < .managed.json)
   echo "$BLUEPRINTDIR"
   echo "$name"
-  sed -e "s/blueprint/$name/g;s/\/templates\/service//g;s/666/$port/g;s/667/$gateway/g" "$BLUEPRINTDIR/templates/service/wercker.yml" > /tmp/audit.yml
+  sed -e "s/blueprint/$name/g;s/\/templates\/service//g;s/6666/$port/g;s/6667/$gateway/g" "$BLUEPRINTDIR/templates/service/wercker.yml" > /tmp/audit.yml
   git diff -u /tmp/audit.yml wercker.yml
 }
 

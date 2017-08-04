@@ -34,7 +34,7 @@ spec:
         ]
         ports:
         - name: server
-          containerPort: 666
+          containerPort: 6666
           protocol: TCP
         - name: metrics
           containerPort: 9102
@@ -48,11 +48,11 @@ spec:
         livenessProbe:
           httpGet:
             path: /live
-            port: 668
+            port: 6668
         readinessProbe:
           httpGet:
             path: /ready
-            port: 668
+            port: 6668
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
@@ -71,7 +71,7 @@ spec:
         ]
         ports:
         - name: gateway
-          containerPort: 667
+          containerPort: 6667
           protocol: TCP
         securityContext:
           readOnlyRootFilesystem: true

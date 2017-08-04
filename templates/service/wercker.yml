@@ -79,7 +79,7 @@ push-quay:
         password: $DOCKER_PASSWORD
         tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT,$WERCKER_GIT_COMMIT
         entrypoint: /blueprint
-        ports: 666,667
+        ports: 6666,6667
         user: 1234
 
 deploy-kube:
