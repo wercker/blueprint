@@ -23,8 +23,8 @@ fi
 cd $LOCAL
 
 echo "Generating gRPC server, gateway, swagger, flow"
-$protoc --go_out=plugins=grpc:$ROOT/blue_print \
-        --grpc-gateway_out=logtostderr=true,request_context=true:$ROOT/blue_print \
-        --swagger_out=logtostderr=true:$ROOT/blue_print \
-        --flow_out=$ROOT/blue_print \
+$protoc --go_out=plugins=grpc:$ROOT/blue_printpb \
+        --grpc-gateway_out=logtostderr=true,request_context=true:$ROOT/blue_printpb \
+        --swagger_out=logtostderr=true:$ROOT/blue_printpb \
+        --flow_out=$ROOT/blue_printpb \
         blue_print.proto

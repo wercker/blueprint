@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package blue_print;
 
+option go_package = "blue_printpb";
+
 import "google/api/annotations.proto";
 
 service Blueprint {

@@ -1,3 +1,3 @@
-package blue_print
+package blue_printpb
 
 //go:generate ./generate-protobuf.sh

@@ -14,7 +14,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/pkg/errors"
 	"github.com/wercker/auth/middleware"
-	"github.com/wercker/blueprint/templates/service/blue_print"
+	"github.com/wercker/blueprint/templates/service/blue_printpb"
 	"github.com/wercker/pkg/conf"
 	"github.com/wercker/pkg/log"
 	"github.com/wercker/pkg/trace"
@@ -74,7 +74,7 @@ var gatewayAction = func(c *cli.Context) error {
 		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(tracer)), // opentracing (outgoing)
 	}
 
-	err = blue_print.RegisterBlueprintHandlerFromEndpoint(ctx, mux, o.Host, opts)
+	err = blue_printpb.RegisterBlueprintHandlerFromEndpoint(ctx, mux, o.Host, opts)
 	if err != nil {
 		log.WithError(err).Error("Unable to register handler from Endpoint")
 		return errorExitCode

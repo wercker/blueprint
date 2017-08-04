@@ -13,7 +13,7 @@ import (
 	grpcmw "github.com/mwitkow/go-grpc-middleware"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/wercker/blueprint/templates/service/blue_print"
+	"github.com/wercker/blueprint/templates/service/blue_printpb"
 	"github.com/wercker/blueprint/templates/service/server"
 	"github.com/wercker/blueprint/templates/service/state"
 	"github.com/wercker/pkg/conf"
@@ -107,7 +107,7 @@ var serverAction = func(c *cli.Context) error {
 	}
 
 	s := grpc.NewServer(grpcmw.WithUnaryServerChain(interceptors...))
-	blue_print.RegisterBlueprintServer(s, server)
+	blue_printpb.RegisterBlueprintServer(s, server)
 	grpc_prometheus.EnableHandlingTimeHistogram()
 	grpc_prometheus.Register(s)
 
