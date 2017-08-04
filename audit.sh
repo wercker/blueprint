@@ -129,6 +129,8 @@ main() {
     check_has "version.go"
     check_has "deployment/deployment.template.yml"
     check_has "request_context=true"
+    check_has ".github/ISSUE_TEMPLATE.md"
+    check_has ".github/PULL_REQUEST_TEMPLATE.md"
     check_has_deps "github.com/wercker/pkg/log"
     check_artifact_output wercker.yml
   )
