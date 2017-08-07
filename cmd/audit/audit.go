@@ -320,6 +320,9 @@ func main() {
 	CheckNotUsing(path, `"github.com/codegangsta/cli"`)
 	CheckNotUsing(path, `\(c\) 2016`, WakkaExclude(".*.json"))
 
+	// Old code
+	CheckNotUsing(path, `Applying context hack to gateway`)
+	CheckNotUsing(path, `func ParseObjectID(id string) (bson.ObjectId, error) {`)
 	CheckHasDeps(path, `github.com/wercker/pkg/log`)
 
 	// Only allow ${WERCKER_ and ${TPL_ in templates
@@ -329,7 +332,7 @@ func main() {
 	// Flags flags flags flags flags env env var var var
 	CheckNotUsing(path, `KUBERNETES_MASTER`)
 	CheckNotUsing(path, `DOCKER_USER$`)
-	CheckNotUsing(path, `MONGODB`)
+	CheckNotUsing(path, `MONGODB[^_]`)
 	CheckNotUsing(path, `AUTH_TARGET|AuthTarget`)
 	CheckNotUsing(path, `\w-host`)
 
