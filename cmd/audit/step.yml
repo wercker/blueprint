@@ -1,0 +1,6 @@
+name: blueprint-audit
+version: 0.0.4
+summary: i check your blueprint services
+category: misc
+tags:
+- blueprint

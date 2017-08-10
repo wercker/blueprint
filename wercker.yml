@@ -70,6 +70,72 @@ build:
           go build
           cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
 
+# Chain from build or build from source
+audit-step:
+  box: golang:1.8
+  base-path: /go/src/github.com/wercker/blueprint
+  steps:
+    - script:
+        name: force "go get" over ssh
+        code: git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+    - add-ssh-key:
+        keyname: WALTERBOT
+
+    - add-to-known_hosts:
+        hostname: github.com
+        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+        type: rsa
+
+    - script:
+        name: install govendor
+        code: go get -u github.com/kardianos/govendor
+
+    # START stepctl
+    # A bunch of stuff to build stepctl since there isn't a step
+    # for it yet, this can go away once that is out of the way
+    - script:
+        cwd: /go/src/github.com/wercker
+        name: checkout stepctl
+        code: git clone git@github.com:wercker/stepctl
+
+    - script:
+        name: stepctl - install dependencies
+        cwd: /go/src/github.com/wercker/stepctl
+        code: |
+          govendor sync
+
+    - script:
+        name: stepctl - compile
+        cwd: /go/src/github.com/wercker/stepctl
+        code: go build
+
+    # END stepctl
+
+    - script:
+        name: blueprint - install dependencies
+        code: govendor sync
+
+    - script:
+        name: audit - compile
+        cwd: cmd/audit
+        code: go build
+
+    - script:
+        name: audit - prune
+        cwd: cmd/audit
+        code: |
+          rm audit.go
+          rm audit.sh
+
+    - script:
+        name: release step
+        cwd: cmd/audit
+        code: |
+          echo "Releasing to termie/blueprint-audit"
+          stepctl=/go/src/github.com/wercker/stepctl/stepctl
+          $stepctl publish --auth-token=$WERCKER_AUTH_TOKEN
+
 proto-box:
   box: golang:1.8
   base-path: /go/src/github.com/wercker/blueprint
