@@ -55,10 +55,26 @@ build:
     - script:
         name: install protobuf plugins
         code: |
+          export PROTOC_GRPC_VERSION=v1.2.2
+
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+
+          # Switch to tag
+          cd $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway
+          git checkout $PROTO_GRPC_VERSION
+          cd protoc-gen-grpc-gateway
+          go install
+          cd ../protoc-gen-swagger
+          go install
+
           go get -u github.com/golang/protobuf/protoc-gen-go
+          cd $GOPATH/src/github.com/golang/protobuf
+          export PROTOC_GO_VERSION=$(git rev-parse HEAD)
+
           go get -u github.com/wercker/protoc-gen-flow
+          cd $GOPATH/src/github.com/wercker/protoc-gen-flow
+          export PROTOC_FLOW_VERSION=$(git rev-parse HEAD)
 
     - script:
         name: test output
@@ -102,10 +118,41 @@ proto-box:
     - script:
         name: install protobuf plugins
         code: |
+          export PROTOC_GRPC_VERSION=v1.2.2
+
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+
+          # Switch to tag
+          cd $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway
+          git checkout $PROTO_GRPC_VERSION
+          cd protoc-gen-grpc-gateway
+          go install
+          cd ../protoc-gen-swagger
+          go install
+
           go get -u github.com/golang/protobuf/protoc-gen-go
+          cd $GOPATH/src/github.com/golang/protobuf
+          export PROTOC_GO_VERSION=$(git rev-parse HEAD)
+
           go get -u github.com/wercker/protoc-gen-flow
+          cd $GOPATH/src/github.com/wercker/protoc-gen-flow
+          export PROTOC_FLOW_VERSION=$(git rev-parse HEAD)
+
+          echo "protobuf: $PROTOBUF_VERSION"
+          echo "protoc-gen-grpc-gateway: $PROTOC_GRPC_VERSION"
+          echo "protoc-gen-swagger: $PROTOC_GRPC_VERSION"
+          echo "protoc-gen-go: $PROTOC_GO_VERSION"
+          echo "protoc-gen-flow: $PROTOC_FLOW_VERSION"
+
+    - bash-template:
+        name: generate protoc script
+        input: templates/protoc.sh
+        output: /protoc.sh
+
+    - script:
+        name: make protoc executable
+        code: cat /protoc.sh && chmod +x /protoc.sh
 
     - script:
         name: prune
@@ -116,10 +163,10 @@ proto-box:
         registry: https://quay.io
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
-        entrypoint: >
-          protoc
-            -I.
-            -I/usr/local/include
-            -I/go/src
-            -I./vendor
-            -I./vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
+        entrypoint: /protoc.sh
+          # protoc
+          #   -I.
+          #   -I/usr/local/include
+          #   -I/go/src
+          #   -I./vendor
+          #   -I./vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
