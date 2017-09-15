@@ -4,6 +4,11 @@ kind: Ingress
 metadata:
   name: blueprint
 spec:
+  tls:
+  - hosts:
+    - ${TPL_INGRESS_HOST}
+    - inbox-${TPL_INGRESS_HOST}
+    secretName: ${TPL_INGRESS_HOST}
   rules:
     - host: ${TPL_INGRESS_HOST}
       http:
