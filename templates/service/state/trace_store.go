@@ -9,6 +9,7 @@ import (
 	"golang.org/x/net/context"
 )
 
+// NewTraceStore creates a new TraceStore.
 func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	component := strings.TrimPrefix(fmt.Sprintf("%T", store), "*")
 	return &TraceStore{
@@ -18,6 +19,7 @@ func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	}
 }
 
+// TraceStore wraps another Store and sends trace information to zipkin.
 type TraceStore struct {
 	store     Store
 	tracer    opentracing.Tracer
@@ -42,10 +44,12 @@ func (s *TraceStore) trace(ctx context.Context, operationName string, opts ...op
 	return opentracing.ContextWithSpan(ctx, span), span
 }
 
+// Healthy calls Healthy on the wrapped store.
 func (s *TraceStore) Healthy() error {
 	return s.store.Healthy()
 }
 
+// Close calls Close on the wrapped store.
 func (s *TraceStore) Close() error {
 	return s.store.Close()
 }
