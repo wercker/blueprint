@@ -1,4 +1,4 @@
-box: golang:1.8
+box: golang:1.9
 build:
   base-path: /go/src/github.com/wercker/blueprint/templates/service
   steps:
@@ -22,7 +22,7 @@ build:
 
     - add-to-known_hosts:
         hostname: github.com
-        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+        fingerprint: nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8
         type: rsa
 
     - script:
