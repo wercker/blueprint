@@ -23,13 +23,16 @@ Start a new project:
 
 `blueprint init service $name`
 
-# Generating the protobufs
+# Generating files
 
 We use go generate
 
 ```
 govendor generate +local
 ```
+
+See [cmd/igenerator/README.md](cmd/igenerator/README.md) for more information
+regarding generating stores and deploying the related Docker image.
 
 # How to Write Templates
 

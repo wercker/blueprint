@@ -84,10 +84,17 @@ var serverAction = func(c *cli.Context) error {
 
 	store, err := getStore(o)
 	if err != nil {
-		log.WithError(err).Error("Unable to create state store")
+		log.WithError(err).Error("Unable to create store")
 		return errorExitCode
 	}
 	defer store.Close()
+
+	err = store.Initialize()
+	if err != nil {
+		log.WithError(err).Error("Unable to initialize store")
+		return errorExitCode
+	}
+
 	healthService.RegisterProbe("store", store)
 
 	store = state.NewTraceStore(store, tracer)

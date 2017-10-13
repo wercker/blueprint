@@ -79,6 +79,7 @@ build:
     - script:
         name: test output
         code: |
+          export GENERATOR_PATH=/go/src/github.com/wercker/blueprint/cmd/igenerator
           mv ./managed/step-registry ../step-registry
           cd ../step-registry
           govendor sync
@@ -230,3 +231,15 @@ proto-box:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
         entrypoint: /protoc.sh
+
+igenerator-push-quay:
+  box: golang:1.8
+  base-path: /go/src/github.com/wercker/blueprint
+  steps:
+    - internal/docker-push:
+        repository: quay.io/wercker/igenerator
+        registry: https://quay.io
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        entrypoint: go run /go/src/github.com/wercker/blueprint/cmd/igenerator/main.go
+        tag: $TPL_IGENERATOR_VERSION

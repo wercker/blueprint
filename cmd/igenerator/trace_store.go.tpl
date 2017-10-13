@@ -1,13 +1,20 @@
 package state
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"golang.org/x/net/context"
 )
+
+// TraceStore wraps another Store and sends trace information to zipkin.
+type TraceStore struct {
+	store     Store
+	tracer    opentracing.Tracer
+	component string
+}
 
 // NewTraceStore creates a new TraceStore.
 func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
@@ -19,16 +26,7 @@ func NewTraceStore(store Store, tracer opentracing.Tracer) *TraceStore {
 	}
 }
 
-// TraceStore wraps another Store and sends trace information to zipkin.
-type TraceStore struct {
-	store     Store
-	tracer    opentracing.Tracer
-	component string
-}
-
 var _ Store = (*TraceStore)(nil)
-
-// TODO: add methods here
 
 func (s *TraceStore) trace(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (context.Context, opentracing.Span) {
 	var span opentracing.Span
@@ -44,6 +42,26 @@ func (s *TraceStore) trace(ctx context.Context, operationName string, opts ...op
 	return opentracing.ContextWithSpan(ctx, span), span
 }
 
+{{range .}}
+{{template "doc" . -}}
+func (s *TraceStore) {{.Name}}({{template "list" .Params}}) ({{template "list" .Returns}}) {
+	ctx, span := s.trace(ctx, "{{.Name}}")
+	defer span.Finish()
+
+	{{template "call" .Returns}} = s.store.{{.Name}}({{template "call" .Params}})
+	//if err != nil {
+	//	span.SetTag(string(ext.Error), true)
+	//}
+
+	return {{template "call" .Returns}}
+}
+{{end}}
+
+// Initialize calls Initialize on the wrapped store.
+func (s *TraceStore) Initialize() error {
+	return s.store.Initialize()
+}
+
 // Healthy calls Healthy on the wrapped store.
 func (s *TraceStore) Healthy() error {
 	return s.store.Healthy()
@@ -53,3 +71,14 @@ func (s *TraceStore) Healthy() error {
 func (s *TraceStore) Close() error {
 	return s.store.Close()
 }
+
+{{define "list"}}{{range $index, $element := .}}{{if $index}}, {{end}}{{if $element.Name}}{{$element.Name}}{{end}} {{$element.Type}}{{end}}{{end}}
+{{define "call"}}{{range $index, $element := .}}{{if $index}}, {{end}}{{if $element.Name}}{{$element.Name}}{{end}}{{end}}{{end}}
+
+{{define "doc"}}
+{{range .Doc}}
+{{.}}
+{{- else}}
+// {{.Name}} .
+{{- end}}
+{{end}}

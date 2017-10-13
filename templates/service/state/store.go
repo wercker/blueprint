@@ -8,7 +8,7 @@ import (
 
 // Store provides access to data that is required for blueprint.
 type Store interface {
+	Initialize() error
 	io.Closer
-
 	health.Probe
 }

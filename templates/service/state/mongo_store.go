@@ -35,6 +35,12 @@ func (s *MongoStore) C(sess *mgo.Session, collectionName string) *mgo.Collection
 	return sess.DB(s.db).C(collectionName)
 }
 
+// Initialize will be called once during startup and should ensure any required
+// indexes are created.
+func (s *MongoStore) Initialize() error {
+	return nil
+}
+
 // Healthy return nil if nothing is wrong. If it is unable to Ping Mongo it
 // will try to refresh the session and will return the err.
 func (s *MongoStore) Healthy() error {
