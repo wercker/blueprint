@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+(
+
 LOCAL=$(dirname $PWD)
 
 if [ -e /var/run/docker.sock ]; then
@@ -28,3 +30,5 @@ $protoc --go_out=plugins=grpc:$ROOT/blue_printpb \
         --swagger_out=logtostderr=true:$ROOT/blue_printpb \
         --flow_out=$ROOT/blue_printpb \
         blue_print.proto
+
+)

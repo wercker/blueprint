@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+(
+
 LOCAL=$(dirname $PWD)
 
 if [ "$FORCE_LOCAL" != "true" ] && [ -e /var/run/docker.sock ]; then
@@ -31,3 +33,5 @@ $GEN -target=Store \
      -ignore="Initialize" \
      -template="$TEMPLATE_DIR/trace_store.go.tpl" \
      -output="$ROOT/state/trace_store.go"
+
+)
