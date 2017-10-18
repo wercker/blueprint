@@ -33,13 +33,22 @@ func main() {
 	templateFlag := flag.String("template", "", "path to the template")
 	formatCode := flag.Bool("format", true, "format output using gofmt")
 	output := flag.String("output", "-", "path to the output file (use - for stdout)")
+	imports := flag.String("imports", "-", "custom imports (separate with commas)")
 
 	flag.Parse()
 
 	log.Printf("Parsing %s for interface %s", *file, *target)
-	ignoredMethods := strings.Split(*ignore, ",")
-	if len(ignoredMethods) > 0 {
+
+	ignoredMethods := []string{}
+	if *ignore != "" {
+		ignoredMethods = strings.Split(*ignore, ",")
 		log.Printf("Ignoring method(s): %s", strings.Join(ignoredMethods, ", "))
+	}
+
+	customImports := []string{}
+	if *imports != "" {
+		customImports = strings.Split(*imports, ",")
+		log.Printf("Custom imports: %s", strings.Join(customImports, ", "))
 	}
 
 	tmpl, err := loadTemplate(*templateFlag)
@@ -124,8 +133,17 @@ func main() {
 		panic(err)
 	}
 
+	vm := &ViewModel{
+		File:          *file,
+		Target:        *target,
+		Template:      *templateFlag,
+		Output:        *output,
+		Methods:       m,
+		CustomImports: customImports,
+	}
+
 	var sink bytes.Buffer
-	err = t.Execute(&sink, m)
+	err = t.Execute(&sink, vm)
 	if err != nil {
 		panic(err)
 	}
@@ -155,6 +173,15 @@ func main() {
 		log.Printf("unable to write output")
 		panic(err)
 	}
+}
+
+type ViewModel struct {
+	File          string
+	Target        string
+	Template      string
+	Output        string
+	Methods       []*Method
+	CustomImports []string
 }
 
 type Method struct {
