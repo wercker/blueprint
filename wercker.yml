@@ -242,4 +242,5 @@ igenerator-push-quay:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
         entrypoint: go run /go/src/github.com/wercker/blueprint/cmd/igenerator/main.go
-        tag: $TPL_IGENERATOR_VERSION
+        tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT,$WERCKER_GIT_COMMIT,$TPL_IGENERATOR_VERSION
+        labels: org.label-schema.vcs-ref=$WERCKER_GIT_COMMIT
