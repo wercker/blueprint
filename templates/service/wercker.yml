@@ -81,6 +81,7 @@ push-quay:
         entrypoint: /blueprint
         ports: 6666,6667
         user: 1234
+        labels: org.label-schema.vcs-ref=$WERCKER_GIT_COMMIT
 
 deploy-kube:
   steps:
