@@ -1,0 +1,6 @@
+blueprintpb/blueprint.flow.js linguist-generated=true
+blueprintpb/blueprint.pb.go linguist-generated=true
+blueprintpb/blueprint.pb.gw.go linguist-generated=true
+blueprintpb/blueprint.swagger.json linguist-generated=true
+state/metrics_store.go linguist-generated=true
+state/trace_store.go linguist-generated=true
