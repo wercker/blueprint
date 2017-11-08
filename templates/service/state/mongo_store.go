@@ -5,12 +5,6 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-var (
-	// ErrInvalidObjectID occurs when a id is supplied which is not a valid
-	// ObjectId.
-	ErrInvalidObjectID = errors.New("Invalid ObjectID")
-)
-
 // NewMongoStore creates a new MongoStore. Use an empty string for databaseName
 // to use the database name that was provided in the connection string.
 func NewMongoStore(session *mgo.Session, databaseName string) (*MongoStore, error) {
