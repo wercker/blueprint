@@ -1,7 +1,6 @@
 package state
 
 import (
-	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2"
 )
 
