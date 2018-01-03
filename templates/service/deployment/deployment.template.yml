@@ -30,29 +30,34 @@ spec:
         image: quay.io/wercker/blueprint:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
         args: [
           "server",
-          "--metrics-port=9102",
         ]
         ports:
         - name: server
-          containerPort: 6666
+          containerPort: 8888
           protocol: TCP
         - name: metrics
           containerPort: 9102
           protocol: TCP
         env:
-          - name: MONGODB_URI
-            valueFrom:
-              secretKeyRef:
-                name: mongo
-                key: connectionstring
+        - name: PORT
+          value: 8888
+        - name: HEALTH_PORT
+          value: 9999
+        - name: METRICS_PORT
+          value: 9102
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongo
+              key: connectionstring
         livenessProbe:
           httpGet:
             path: /live
-            port: 6668
+            port: 9999
         readinessProbe:
           httpGet:
             path: /ready
-            port: 6668
+            port: 9999
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
@@ -71,8 +76,13 @@ spec:
         ]
         ports:
         - name: gateway
-          containerPort: 6667
+          containerPort: 8080
           protocol: TCP
+        env:
+        - name: HTTP_PORT
+          value: 8080
+        - name: GRPC_HOST
+          value: "localhost:8888"
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
