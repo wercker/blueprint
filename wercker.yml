@@ -1,5 +1,5 @@
 build:
-  box: golang:1.10
+  box: golang:1.8
   base-path: /go/src/github.com/wercker/blueprint
   steps:
     - install-packages:
@@ -14,7 +14,7 @@ build:
 
     - add-to-known_hosts:
         hostname: github.com
-        fingerprint: nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8
+        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
         type: rsa
 
     - script:
