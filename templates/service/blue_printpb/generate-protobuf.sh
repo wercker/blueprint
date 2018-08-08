@@ -11,7 +11,7 @@ if [ -e /var/run/docker.sock ]; then
     -u $(id -u $USER):$(id -g $USER) \
     -w $ROOT \
     -v $LOCAL:$ROOT \
-    quay.io/wercker/protoc"
+    iad.ocir.io/odx-pipelines/wercker/protoc"
 else
   ROOT=$LOCAL
   protoc="protoc \
