@@ -205,6 +205,7 @@ proto-box:
           mkdir googleapis
           cd googleapis
           git clone git@github.com:googleapis/googleapis.git
+          cd googleapis
           git checkout $PROTOS_COMMON_VERSION
 
           # Build plugins
