@@ -11,5 +11,5 @@ protoc \
   -I/usr/local/include \
   -I/go/src \
   -I./vendor \
-  -I./vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+  -I/go/src/github.com/googleapis/googleapis \
   \$@

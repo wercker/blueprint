@@ -154,7 +154,7 @@ audit-step:
           $stepctl publish --auth-token=$WERCKER_AUTH_TOKEN
 
 proto-box:
-  box: golang:1.8
+  box: golang:1.10
   base-path: /go/src/github.com/wercker/blueprint
   steps:
     - install-packages:
@@ -186,6 +186,7 @@ proto-box:
         name: install protobuf plugins
         code: |
           export PROTOC_GRPC_VERSION=v1.2.2
+          export PROTOS_COMMON_VERSION=common-protos-1_3_1
 
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
@@ -198,6 +199,14 @@ proto-box:
           cd ../protoc-gen-swagger
           go install
 
+          # Get common proto headers
+          cd $GOPATH/src/github.com
+          mkdir googleapis
+          cd googleapis
+          git clone git@github.com:googleapis/googleapis.git
+          git checkout $PROTOS_COMMON_VERSION
+
+          # Build plugins
           go get -u github.com/golang/protobuf/protoc-gen-go
           cd $GOPATH/src/github.com/golang/protobuf
           export PROTOC_GO_VERSION=$(git rev-parse HEAD)
@@ -226,10 +235,10 @@ proto-box:
         code: rm -rf /pipeline /tmp/*
 
     - internal/docker-push:
-        repository: quay.io/wercker/protoc
-        registry: https://quay.io
-        username: $DOCKER_USERNAME
-        password: $DOCKER_PASSWORD
+        repository: iad.ocir.io/odx-pipelines/wercker/protoc
+        registry: https://iad.ocir.io/v2
+        username: ${OCIR_USERNAME}
+        password: ${OCIR_PASSWORD}
         entrypoint: /protoc.sh
 
 igenerator-push-quay:
