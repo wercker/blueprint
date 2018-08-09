@@ -179,7 +179,10 @@ proto-box:
           export PROTOBUF_VERSION=3.6.1
           curl -L https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip > /tmp/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
           cd /tmp
-          unzip protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
+          mkdir foo
+          cd foo
+          unzip ../protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
+          find . -type f | xargs chmod a+rw
           mv -v include/* /usr/local/include/
           mv -v bin/* /usr/local/bin
 
