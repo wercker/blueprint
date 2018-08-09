@@ -190,7 +190,6 @@ proto-box:
         name: install protobuf plugins
         code: |
           export PROTOC_GRPC_VERSION=v1.4.1
-          export PROTOS_COMMON_VERSION=common-protos-1_3_1
 
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
@@ -208,8 +207,6 @@ proto-box:
           mkdir googleapis
           cd googleapis
           git clone git@github.com:googleapis/googleapis.git
-          cd googleapis
-          git checkout $PROTOS_COMMON_VERSION
 
           # Build plugins
           go get -u github.com/golang/protobuf/protoc-gen-go
