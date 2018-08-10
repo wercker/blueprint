@@ -18,7 +18,7 @@ import (
 	"strings"
 	"text/template"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/wercker/pkg/log"
 )
 
 func createWalker(cfg *Config, templateRoot, outputRoot string) func(string, os.FileInfo, error) error {

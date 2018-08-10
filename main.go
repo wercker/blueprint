@@ -25,8 +25,8 @@ import (
 	"strconv"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/manifoldco/promptui"
+	"github.com/wercker/pkg/log"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
