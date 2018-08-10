@@ -27,13 +27,13 @@ build:
           export PATH=/tmp/bin:$PATH
 
     - script:
-        name: install govendor
-        code: go get -u github.com/kardianos/govendor
+        name: install dep
+        code: go get -u github.com/golang/dep/cmd/dep
 
     - script:
         name: install dependencies
         code: |
-          govendor sync
+          dep ensure
 
     - script:
         name: compile
