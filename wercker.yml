@@ -79,16 +79,15 @@ build:
     - script:
         name: test output
         code: |
-          # echo "temporarily disable test"
-          # pwd
-          # find . -type f
           mv ./managed/step-registry ../step-registry
-          cd ../step-registry/stepregistrypb
+          cd ../step-registry
+          dep ensure
+          cd stepregistrypb
           ./generate-protobuf.sh
           cd ../state
           ./generate-stores.sh
           cd ..
-          dep ensure
+          dep ensure --update
           go build
           cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
 
