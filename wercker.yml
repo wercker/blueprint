@@ -79,16 +79,18 @@ build:
     - script:
         name: test output
         code: |
-          echo "temporarily disable test"
-          pwd
-          find . -type f
-          # export GENERATOR_PATH=/go/src/github.com/wercker/blueprint/cmd/igenerator
-          # mv ./managed/step-registry ../step-registry
-          # cd ../step-registry
-          # govendor sync
-          # govendor generate +local
-          # go build
-          # cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
+          # echo "temporarily disable test"
+          # pwd
+          # find . -type f
+          mv ./managed/step-registry ../step-registry
+          cd ../step-registry/stepregistrypb
+          ./generate-protobuf.sh
+          cd ../state
+          ./generate-stores.sh
+          cd ..
+          dep ensure
+          go build
+          cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
 
 # Chain from build or build from source
 audit-step:
