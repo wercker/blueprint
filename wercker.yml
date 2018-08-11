@@ -79,18 +79,18 @@ build:
     - script:
         name: test output
         code: |
-          echo "Not running test"
-          # mv ./managed/step-registry ../step-registry
-          # cd ../step-registry
-          # dep ensure
-          # cd stepregistrypb
-          # ./generate-protobuf.sh
-          # cd ../state
-          # ./generate-stores.sh
-          # cd ..
-          # dep ensure --update
-          # go build
-          # cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
+          # echo "Not running test"
+          mv ./managed/step-registry ../step-registry
+          cd ../step-registry
+          dep ensure
+          cd stepregistrypb
+          ./generate-protobuf.sh
+          cd ../state
+          ./generate-stores.sh
+          cd ..
+          dep ensure --update
+          go build
+          cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
 
 # Chain from build or build from source
 audit-step:
