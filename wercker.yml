@@ -59,6 +59,7 @@ build:
 
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+          go get -u github.com/googleapis/googleapis
 
           # Switch to tag
           cd $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway
@@ -197,7 +198,6 @@ proto-box:
 
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
           go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
-          go get -u github.com/googleapis/googleapis
 
           # Switch to tag
           cd $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway
