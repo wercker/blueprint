@@ -28,6 +28,7 @@ var replacements [][]string = [][]string{
 	[]string{"6669", "{{.MetricsPort}}"},
 	[]string{"TiVo for VRML", "{{.Description}}"},
 	[]string{"1996", "{{.Year}}"},
+	[]string{"<<BLUEPRINT>>", "blueprint"},
 }
 
 func replaceSentinels(s string) string {

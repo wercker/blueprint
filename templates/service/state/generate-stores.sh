@@ -15,7 +15,7 @@ if [ "$FORCE_LOCAL" != "true" ] && [ -e /var/run/docker.sock ]; then
     -w $ROOT \
     -v $LOCAL:$ROOT \
     quay.io/wercker/igenerator:stable"
-  TEMPLATE_DIR="/go/src/github.com/wercker/blueprint/cmd/igenerator"
+  TEMPLATE_DIR="/go/src/github.com/wercker/<<BLUEPRINT>>/cmd/igenerator"
 else
   GENERATOR_PATH=${GENERATOR_PATH:?"GENERATOR_PATH is required for local runs"}
   ROOT=$LOCAL
