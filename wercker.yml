@@ -76,6 +76,8 @@ build:
           cd $GOPATH/src/github.com/wercker/protoc-gen-flow
           export PROTOC_FLOW_VERSION=$(git rev-parse HEAD)
 
+          go get -u github.com/googleapis/googleapis
+
     - script:
         name: test output
         code: |
