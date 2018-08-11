@@ -80,6 +80,8 @@ build:
         name: test output
         code: |
           echo "temporarily disable test"
+          pwd
+          find . -type f
           # export GENERATOR_PATH=/go/src/github.com/wercker/blueprint/cmd/igenerator
           # mv ./managed/step-registry ../step-registry
           # cd ../step-registry
