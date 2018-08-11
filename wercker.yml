@@ -83,7 +83,6 @@ build:
     - script:
         name: test output
         code: |
-          # echo "Not running test"
           export GENERATOR_PATH=/go/src/github.com/wercker/blueprint/cmd/igenerator
           mv ./managed/step-registry ../step-registry
           cd ../step-registry
