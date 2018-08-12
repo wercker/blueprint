@@ -16,11 +16,17 @@ flags.
 
 # Building
 
-We use govendor to ensure all dependencies with their expected versions are
+We use dep to ensure all dependencies with their expected versions are
 present in the vendor directory.
 
 ```
-govendor sync
+dep ensure
+cd *pb
+./generate_protobuf.sh
+cd ../store
+./generate_stores.sh
+cd ..
+dep ensure --update
 go install
 ```
 
