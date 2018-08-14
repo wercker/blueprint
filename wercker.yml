@@ -87,11 +87,7 @@ build:
           mv ./managed/step-registry ../step-registry
           cd ../step-registry
           dep ensure
-          cd stepregistrypb
-          ./generate-protobuf.sh
-          cd ../state
-          ./generate-stores.sh
-          cd ..
+          go generate ./...
           dep ensure --update
           go build
           cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry

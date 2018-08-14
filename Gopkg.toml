@@ -54,7 +54,7 @@
   name = "github.com/wercker/auth"
 
 [[constraint]]
-  branch = "add_source_logger"
+  branch = "master"
   name = "github.com/wercker/pkg"
 
 [[constraint]]

@@ -21,11 +21,7 @@ present in the vendor directory.
 
 ```
 dep ensure
-cd *pb
-./generate_protobuf.sh
-cd ../store
-./generate_stores.sh
-cd ..
+go generate ./...
 dep ensure --update
 go install
 ```
