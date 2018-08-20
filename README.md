@@ -22,7 +22,7 @@ present in the vendor directory.
 ```
 dep ensure
 go generate ./...
-dep ensure --update
+dep ensure
 go install
 ```
 
