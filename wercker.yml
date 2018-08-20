@@ -88,7 +88,7 @@ build:
           cd ../step-registry
           dep ensure
           go generate ./...
-          dep ensure --update
+          dep ensure
           go build
           cp -r ./ $WERCKER_REPORT_ARTIFACTS_DIR/step-registry
 
